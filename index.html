@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>EISENHAUS — Materiales para techo y estructura</title>
+<meta name="description" content="EISENHAUS: lámina galvanizada, zintro alum, plastiteja, polín y perfiles PTR. Ventas a nivel nacional. Cotiza por WhatsApp." />
+<style>
+  :root{
+    --orange:#f5750f;
+    --dark:#14171a;
+    --bg:#0f1113;
+    --card:#1b1e21;
+    --text:#f2f2f0;
+    --muted:#a9adb2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.5;
+  }
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:20px 6vw;
+    border-bottom:1px solid #26292c;
+    position:sticky;
+    top:0;
+    background:rgba(15,17,19,0.92);
+    backdrop-filter:blur(6px);
+    z-index:10;
+  }
+  .logo{
+    font-weight:800;
+    font-size:1.4rem;
+    letter-spacing:1px;
+    color:var(--text);
+  }
+  .logo span{color:var(--orange);}
+  .btn{
+    display:inline-block;
+    background:var(--orange);
+    color:#fff;
+    font-weight:700;
+    padding:12px 22px;
+    border-radius:8px;
+    text-decoration:none;
+    transition:transform .15s ease, filter .15s ease;
+  }
+  .btn:hover{filter:brightness(1.08); transform:translateY(-1px);}
+  .hero{
+    padding:72px 6vw 56px;
+    text-align:center;
+    max-width:900px;
+    margin:0 auto;
+  }
+  .hero h1{
+    font-size:clamp(2rem, 5vw, 3.2rem);
+    font-weight:800;
+    margin-bottom:16px;
+  }
+  .hero h1 span{color:var(--orange);}
+  .hero p{
+    color:var(--muted);
+    font-size:1.15rem;
+    max-width:620px;
+    margin:0 auto 30px;
+  }
+  .badge{
+    display:inline-block;
+    background:#26292c;
+    color:var(--muted);
+    font-size:.85rem;
+    padding:6px 14px;
+    border-radius:999px;
+    margin-bottom:18px;
+  }
+  section.products{
+    padding:20px 6vw 80px;
+    max-width:1200px;
+    margin:0 auto;
+  }
+  section.products h2{
+    text-align:center;
+    font-size:1.8rem;
+    margin-bottom:8px;
+  }
+  section.products > p{
+    text-align:center;
+    color:var(--muted);
+    margin-bottom:40px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(270px, 1fr));
+    gap:24px;
+  }
+  .card{
+    background:var(--card);
+    border-radius:14px;
+    overflow:hidden;
+    border:1px solid #26292c;
+    display:flex;
+    flex-direction:column;
+  }
+  .card img{
+    width:100%;
+    aspect-ratio:1/1;
+    object-fit:cover;
+    display:block;
+  }
+  .card-body{
+    padding:18px 20px 22px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    flex:1;
+  }
+  .card-body h3{
+    font-size:1.1rem;
+  }
+  .card-body p{
+    color:var(--muted);
+    font-size:.92rem;
+    flex:1;
+  }
+  .card-body a{
+    align-self:flex-start;
+    font-size:.9rem;
+    padding:9px 16px;
+  }
+  footer{
+    padding:50px 6vw;
+    text-align:center;
+    border-top:1px solid #26292c;
+    color:var(--muted);
+    font-size:.9rem;
+  }
+  footer a{color:var(--orange); text-decoration:none;}
+  .wa-float{
+    position:fixed;
+    bottom:22px;
+    right:22px;
+    z-index:20;
+    box-shadow:0 6px 20px rgba(0,0,0,.35);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">EISEN<span>HAUS</span></div>
+  <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20material" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+</header>
+
+<section class="hero">
+  <div class="badge">Ventas a nivel nacional</div>
+  <h1>Materiales para <span>techo y estructura</span>, listos para tu obra</h1>
+  <p>Lámina galvanizada, Zintro Alum, plastiteja, polín y perfiles PTR. Cotiza por WhatsApp y te asesoramos según tu proyecto.</p>
+  <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20material" target="_blank" rel="noopener">Cotizar por WhatsApp</a>
+</section>
+
+<section class="products">
+  <h2>Nuestros productos</h2>
+  <p>Consulta medidas, calibres y disponibilidad por WhatsApp</p>
+  <div class="grid">
+
+    <div class="card">
+      <img src="assets/anuncio_galvanizada.png" alt="Lámina Galvanizada" loading="lazy" />
+      <div class="card-body">
+        <h3>Lámina Galvanizada</h3>
+        <p>Materiales para techo y cerramientos. Ancho de 1 m, corte según existencia.</p>
+        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20l%C3%A1mina%20galvanizada" target="_blank" rel="noopener">Cotizar</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="assets/anuncio_galvanizada_stock.png" alt="Lámina Galvanizada — varias medidas" loading="lazy" />
+      <div class="card-body">
+        <h3>Galvanizada — varias medidas</h3>
+        <p>Lista para obra, cochera y bodega. Pregunta largos disponibles.</p>
+        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20l%C3%A1mina%20galvanizada" target="_blank" rel="noopener">Cotizar</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="assets/anuncio_galvanizada_uso.png" alt="Galvanizada para estructuras y cerramientos" loading="lazy" />
+      <div class="card-body">
+        <h3>Galvanizada — estructuras</h3>
+        <p>Ideal para techos ligeros. Consulta medida y existencia.</p>
+        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20l%C3%A1mina%20galvanizada" target="_blank" rel="noopener">Cotizar</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="assets/anuncio_plastiteja.png" alt="Plastiteja" loading="lazy" />
+      <div class="card-body">
+        <h3>Plastiteja</h3>
+        <p>Medidas de 1.00x2.60 m a 1.00x7.28 m. Ideal para terrazas, cocheras y casas.</p>
+        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20plastiteja" target="_blank" rel="noopener">Cotizar</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="assets/anuncio_polin_c_3pulgadas.png" alt="Polín C 3 pulgadas" loading="lazy" />
+      <div class="card-body">
+        <h3>Polín C — 3" x 6 m</h3>
+        <p>Perfil forma C, color anaranjado, para techumbres y estructuras.</p>
+        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20pol%C3%ADn%20C" target="_blank" rel="noopener">Cotizar</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="assets/anuncio_ptr_verde_r300_r200.png" alt="PTR verde R300 R200" loading="lazy" />
+      <div class="card-body">
+        <h3>PTR R300 / R200 — 3" x 6 m</h3>
+        <p>Perfil tubular rectangular para estructuras, soportes y herrería.</p>
+        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20PTR" target="_blank" rel="noopener">Cotizar</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="assets/anuncio_perfiles_rectangulares.png" alt="Perfiles rectangulares" loading="lazy" />
+      <div class="card-body">
+        <h3>Perfiles rectangulares</h3>
+        <p>Pintado y zintro, tramos de 6 m en varias medidas.</p>
+        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20perfiles%20rectangulares" target="_blank" rel="noopener">Cotizar</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="assets/anuncio_zintro_alum.png" alt="Lámina Zintro Alum" loading="lazy" />
+      <div class="card-body">
+        <h3>Zintro Alum</h3>
+        <p>Resistente y lista para obra. Disponible en varias medidas.</p>
+        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20Zintro%20Alum" target="_blank" rel="noopener">Cotizar</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="assets/anuncio_zintro_alum_stock.png" alt="Zintro Alum en existencia" loading="lazy" />
+      <div class="card-body">
+        <h3>Zintro Alum — en existencia</h3>
+        <p>Lámina acanalada lista para entrega inmediata.</p>
+        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20Zintro%20Alum" target="_blank" rel="noopener">Cotizar</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="assets/anuncio_zintro_alum_techo.png" alt="Zintro Alum para techo" loading="lazy" />
+      <div class="card-body">
+        <h3>Zintro Alum — lámina para techo</h3>
+        <p>Acabado brillante y resistente. Ideal para nave, taller, cochera o bodega.</p>
+        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20Zintro%20Alum" target="_blank" rel="noopener">Cotizar</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <p>EISENHAUS — Materiales para techo y estructura · Ventas a nivel nacional</p>
+  <p>Contacto: <a href="https://wa.me/14158735968" target="_blank" rel="noopener">WhatsApp +1 415 873 5968</a></p>
+</footer>
+
+<a class="btn wa-float" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20material" target="_blank" rel="noopener">WhatsApp</a>
+
+</body>
+</html>
