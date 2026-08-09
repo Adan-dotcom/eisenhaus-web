@@ -1111,6 +1111,7 @@ const products = [
 
 let activeFilter = "Todos";
 let cart = {};
+let chatHistory = [];
 
 const moneyNote = "Precio por confirmar";
 const grid = document.getElementById("productGrid");
@@ -1253,7 +1254,7 @@ async function askChatbot(text) {
   const response = await fetch(CHAT_API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: text, products })
+    body: JSON.stringify({ message: text, products, history: chatHistory.slice(-8) })
   });
   if (!response.ok) throw new Error("Chat API error");
   const data = await response.json();
@@ -1323,10 +1324,15 @@ document.getElementById("chatForm").addEventListener("submit", async event => {
   if (!text) return;
   input.value = "";
   postMessage(text, "user");
+  chatHistory.push({ role: "user", content: text });
   try {
-    postMessage(await askChatbot(text), "bot");
+    const reply = await askChatbot(text);
+    postMessage(reply, "bot");
+    chatHistory.push({ role: "assistant", content: reply });
   } catch {
-    postMessage(localChatReply(text), "bot");
+    const reply = localChatReply(text);
+    postMessage(reply, "bot");
+    chatHistory.push({ role: "assistant", content: reply });
   }
 });
 
