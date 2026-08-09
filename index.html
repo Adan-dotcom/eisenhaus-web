@@ -3,270 +3,1337 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>EISENHAUS — Materiales para techo y estructura</title>
-<meta name="description" content="EISENHAUS: lámina galvanizada, zintro alum, plastiteja, polín y perfiles PTR. Ventas a nivel nacional. Cotiza por WhatsApp." />
+<title>EISENHAUS | Laminas y perfil estructural</title>
+<meta name="description" content="EISENHAUS vende lamina galvanizada, Zintro Alum, plastiteja, polin C, PTR y perfiles rectangulares para techo y estructura. Cotiza por WhatsApp." />
+<meta property="og:title" content="EISENHAUS | Laminas y perfil estructural" />
+<meta property="og:description" content="Catalogo industrial de laminas y perfil estructural para obra, bodega, cochera y techumbre." />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#1a1616" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --orange:#f5750f;
-    --dark:#14171a;
-    --bg:#0f1113;
-    --card:#1b1e21;
-    --text:#f2f2f0;
-    --muted:#a9adb2;
+  :root {
+    --background: oklch(0.16 0.012 20);
+    --foreground: oklch(0.96 0.005 60);
+    --card: oklch(0.21 0.014 22);
+    --primary: oklch(0.55 0.222 27);
+    --primary-foreground: oklch(0.98 0.005 60);
+    --secondary: oklch(0.27 0.014 24);
+    --muted: oklch(0.26 0.012 24);
+    --muted-foreground: oklch(0.72 0.015 40);
+    --accent: oklch(0.68 0.16 55);
+    --accent-foreground: oklch(0.18 0.012 20);
+    --border: oklch(0.32 0.016 26);
+    --ring: oklch(0.55 0.222 27);
+    --shadow-forge: 0 18px 50px -20px oklch(0.55 0.222 27 / 0.55);
+    --max: 1152px;
+    --radius: 4px;
   }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background:var(--bg);
-    color:var(--text);
-    line-height:1.5;
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background:
+      linear-gradient(90deg, oklch(0.19 0.014 22 / 0.55) 1px, transparent 1px),
+      linear-gradient(0deg, oklch(0.19 0.014 22 / 0.55) 1px, transparent 1px),
+      var(--background);
+    background-size: 44px 44px;
+    color: var(--foreground);
+    font-family: "Barlow", ui-sans-serif, system-ui, sans-serif;
+    line-height: 1.5;
   }
-  header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:20px 6vw;
-    border-bottom:1px solid #26292c;
-    position:sticky;
-    top:0;
-    background:rgba(15,17,19,0.92);
-    backdrop-filter:blur(6px);
-    z-index:10;
+  body.drawer-open { overflow: hidden; }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  button, input, textarea { font: inherit; }
+  h1, h2, h3 {
+    margin: 0;
+    font-family: "Barlow Condensed", "Barlow", sans-serif;
+    letter-spacing: 0;
+    text-transform: uppercase;
   }
-  .logo{
-    font-weight:800;
-    font-size:1.4rem;
-    letter-spacing:1px;
-    color:var(--text);
+  p { margin: 0; }
+
+  .container {
+    width: min(var(--max), calc(100% - 32px));
+    margin-inline: auto;
   }
-  .logo span{color:var(--orange);}
-  .btn{
-    display:inline-block;
-    background:var(--orange);
-    color:#fff;
-    font-weight:700;
-    padding:12px 22px;
-    border-radius:8px;
-    text-decoration:none;
-    transition:transform .15s ease, filter .15s ease;
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    border-bottom: 1px solid var(--border);
+    background: oklch(0.16 0.012 20 / 0.88);
+    backdrop-filter: blur(12px);
   }
-  .btn:hover{filter:brightness(1.08); transform:translateY(-1px);}
-  .hero{
-    padding:72px 6vw 56px;
-    text-align:center;
-    max-width:900px;
-    margin:0 auto;
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 72px;
+    gap: 18px;
   }
-  .hero h1{
-    font-size:clamp(2rem, 5vw, 3.2rem);
-    font-weight:800;
-    margin-bottom:16px;
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
   }
-  .hero h1 span{color:var(--orange);}
-  .hero p{
-    color:var(--muted);
-    font-size:1.15rem;
-    max-width:620px;
-    margin:0 auto 30px;
+  .brand-mark {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--primary);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 18px;
+    font-weight: 800;
   }
-  .badge{
-    display:inline-block;
-    background:#26292c;
-    color:var(--muted);
-    font-size:.85rem;
-    padding:6px 14px;
-    border-radius:999px;
-    margin-bottom:18px;
+  .brand-name {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 25px;
+    font-weight: 800;
+    line-height: 0.9;
+    text-transform: uppercase;
   }
-  section.products{
-    padding:20px 6vw 80px;
-    max-width:1200px;
-    margin:0 auto;
+  .brand-name span { color: var(--primary); }
+  .brand-sub {
+    color: var(--muted-foreground);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
   }
-  section.products h2{
-    text-align:center;
-    font-size:1.8rem;
-    margin-bottom:8px;
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    color: var(--muted-foreground);
+    font-size: 14px;
+    font-weight: 600;
   }
-  section.products > p{
-    text-align:center;
-    color:var(--muted);
-    margin-bottom:40px;
+  .nav a:hover { color: var(--foreground); }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(270px, 1fr));
-    gap:24px;
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 40px;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    padding: 0 16px;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease, transform .15s ease;
   }
-  .card{
-    background:var(--card);
-    border-radius:14px;
-    overflow:hidden;
-    border:1px solid #26292c;
-    display:flex;
-    flex-direction:column;
+  .btn:hover { background: oklch(0.5 0.205 27); transform: translateY(-1px); }
+  .btn:focus-visible, .icon-btn:focus-visible, input:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
-  .card img{
-    width:100%;
-    aspect-ratio:1/1;
-    object-fit:cover;
-    display:block;
+  .btn.secondary {
+    border-color: var(--border);
+    background: var(--secondary);
+    color: var(--foreground);
   }
-  .card-body{
-    padding:18px 20px 22px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    flex:1;
+  .btn.secondary:hover {
+    border-color: var(--primary);
+    background: var(--muted);
   }
-  .card-body h3{
-    font-size:1.1rem;
+  .icon-btn {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--secondary);
+    color: var(--foreground);
+    cursor: pointer;
   }
-  .card-body p{
-    color:var(--muted);
-    font-size:.92rem;
-    flex:1;
+  .icon { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    min-width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--primary);
+    background: var(--primary-foreground);
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 800;
   }
-  .card-body a{
-    align-self:flex-start;
-    font-size:.9rem;
-    padding:9px 16px;
+
+  .hero {
+    position: relative;
+    min-height: calc(100svh - 72px);
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
   }
-  footer{
-    padding:50px 6vw;
-    text-align:center;
-    border-top:1px solid #26292c;
-    color:var(--muted);
-    font-size:.9rem;
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, var(--background) 0%, oklch(0.16 0.012 20 / 0.92) 43%, oklch(0.16 0.012 20 / 0.52) 100%),
+      linear-gradient(0deg, var(--background) 0%, transparent 30%);
+    z-index: 1;
   }
-  footer a{color:var(--orange); text-decoration:none;}
-  .wa-float{
-    position:fixed;
-    bottom:22px;
-    right:22px;
-    z-index:20;
-    box-shadow:0 6px 20px rgba(0,0,0,.35);
+  .hero-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: .52;
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    align-content: center;
+    min-height: calc(100svh - 72px);
+    padding: 72px 0 84px;
+  }
+  .hero-content { max-width: 760px; }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--primary);
+    border-radius: var(--radius);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    margin-top: 18px;
+    font-size: clamp(46px, 9vw, 96px);
+    font-weight: 800;
+    line-height: .9;
+    max-width: 840px;
+  }
+  .hero h1 span { color: var(--primary); }
+  .hero-copy {
+    margin-top: 18px;
+    max-width: 650px;
+    color: var(--muted-foreground);
+    font-size: clamp(17px, 2.2vw, 21px);
+  }
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: 690px;
+    margin-top: 44px;
+    border-top: 1px solid var(--border);
+  }
+  .stat {
+    padding: 18px 18px 0 0;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: 0; }
+  .stat strong {
+    display: block;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: clamp(25px, 4vw, 38px);
+    line-height: 1;
+  }
+  .stat span {
+    display: block;
+    margin-top: 6px;
+    color: var(--muted-foreground);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  section { padding: 72px 0; }
+  .section-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+  .section-kicker {
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+  .section-head h2 {
+    margin-top: 7px;
+    font-size: clamp(32px, 4.5vw, 52px);
+    line-height: .95;
+  }
+  .section-head p {
+    max-width: 455px;
+    color: var(--muted-foreground);
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .filter {
+    min-height: 36px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0 12px;
+    background: var(--secondary);
+    color: var(--muted-foreground);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .filter.active, .filter:hover {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .product-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .product-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+  }
+  .product-media {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--muted);
+  }
+  .product-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .25s ease;
+  }
+  .product-card:hover .product-media img { transform: scale(1.035); }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    min-height: 25px;
+    border: 1px solid var(--primary);
+    border-radius: var(--radius);
+    padding: 0 9px;
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+  }
+  .product-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 13px;
+    padding: 16px;
+  }
+  .product-top {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .availability {
+    color: var(--muted-foreground);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .product-card h3 {
+    font-size: 22px;
+    line-height: 1;
+  }
+  .product-card p {
+    color: var(--muted-foreground);
+    font-size: 14px;
+  }
+  .specs {
+    display: grid;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    color: var(--muted-foreground);
+    font-size: 13px;
+    list-style: none;
+  }
+  .specs li {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    border-top: 1px solid var(--border);
+    padding-top: 7px;
+  }
+  .specs b {
+    color: var(--foreground);
+    font-weight: 700;
+    text-align: right;
+  }
+  .product-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: auto;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+  }
+  .price {
+    display: grid;
+    gap: 2px;
+  }
+  .price span {
+    color: var(--muted-foreground);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+  .price strong {
+    font-size: 19px;
+    line-height: 1;
+  }
+
+  .services {
+    border-block: 1px solid var(--border);
+    background: oklch(0.21 0.014 22 / 0.55);
+  }
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .service {
+    border-left: 1px solid var(--border);
+    padding: 4px 0 4px 18px;
+  }
+  .service .icon {
+    width: 30px;
+    height: 30px;
+    color: var(--primary);
+  }
+  .service h3 {
+    margin-top: 14px;
+    font-size: 21px;
+  }
+  .service p {
+    margin-top: 8px;
+    color: var(--muted-foreground);
+    font-size: 14px;
+  }
+
+  .quote-band {
+    padding: 0 0 72px;
+  }
+  .quote-panel {
+    display: grid;
+    grid-template-columns: 1.15fr .85fr;
+    gap: 24px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    box-shadow: var(--shadow-forge);
+    padding: 28px;
+  }
+  .quote-panel h2 {
+    font-size: clamp(31px, 4vw, 48px);
+    line-height: .95;
+  }
+  .quote-panel p {
+    margin-top: 10px;
+    color: var(--muted-foreground);
+  }
+  .quote-list {
+    display: grid;
+    gap: 9px;
+    margin: 20px 0 0;
+    padding: 0;
+    color: var(--muted-foreground);
+    font-size: 14px;
+    list-style: none;
+  }
+  .quote-list li::before {
+    content: "";
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 10px;
+    background: var(--primary);
+  }
+  .contact-box {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--background);
+    padding: 18px;
+  }
+  .contact-box label {
+    display: grid;
+    gap: 6px;
+    color: var(--muted-foreground);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+  }
+  .contact-box input, .contact-box textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--secondary);
+    color: var(--foreground);
+    padding: 11px 12px;
+  }
+  .contact-box textarea {
+    min-height: 92px;
+    resize: vertical;
+  }
+
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    color: var(--muted-foreground);
+    font-size: 13px;
+  }
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+  }
+
+  .drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: none;
+    background: oklch(0 0 0 / .76);
+  }
+  .drawer-backdrop.open { display: block; }
+  .drawer {
+    position: fixed;
+    inset: 0 0 0 auto;
+    z-index: 70;
+    display: flex;
+    flex-direction: column;
+    width: min(100%, 430px);
+    border-left: 1px solid var(--border);
+    background: var(--background);
+    transform: translateX(100%);
+    transition: transform .22s ease;
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-head, .drawer-foot {
+    border-bottom: 1px solid var(--border);
+    padding: 18px;
+  }
+  .drawer-head {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .drawer-head h2 { font-size: 27px; }
+  .drawer-head p {
+    color: var(--muted-foreground);
+    font-size: 14px;
+  }
+  .drawer-body {
+    flex: 1;
+    overflow: auto;
+    padding: 18px;
+  }
+  .cart-items {
+    display: grid;
+    gap: 10px;
+  }
+  .cart-item {
+    display: grid;
+    gap: 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    padding: 12px;
+  }
+  .cart-line {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .cart-line h3 {
+    font-family: "Barlow", sans-serif;
+    font-size: 15px;
+    line-height: 1.25;
+    text-transform: none;
+  }
+  .cart-line p {
+    color: var(--muted-foreground);
+    font-size: 12px;
+  }
+  .qty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .qty button {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--secondary);
+    color: var(--foreground);
+    cursor: pointer;
+  }
+  .empty {
+    border: 1px dashed var(--border);
+    color: var(--muted-foreground);
+    padding: 18px;
+    text-align: center;
+  }
+  .totals {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .total-line {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--muted-foreground);
+    font-size: 14px;
+  }
+  .total-line strong {
+    color: var(--foreground);
+    font-size: 18px;
+  }
+  .drawer-foot {
+    border-top: 1px solid var(--border);
+    border-bottom: 0;
+  }
+  .drawer-foot .btn { width: 100%; }
+
+  .chat {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 50;
+  }
+  .chat-toggle {
+    width: 54px;
+    height: 54px;
+    border: 1px solid var(--primary);
+    border-radius: var(--radius);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    box-shadow: var(--shadow-forge);
+  }
+  .chat-panel {
+    position: absolute;
+    right: 0;
+    bottom: 66px;
+    display: none;
+    width: min(calc(100vw - 36px), 360px);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--background);
+    box-shadow: 0 22px 50px oklch(0 0 0 / .45);
+  }
+  .chat-panel.open { display: block; }
+  .chat-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: var(--card);
+    padding: 12px;
+  }
+  .chat-head h2 {
+    font-family: "Barlow", sans-serif;
+    font-size: 14px;
+    letter-spacing: .08em;
+  }
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--muted-foreground);
+    font-size: 12px;
+  }
+  .status::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+  }
+  .messages {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    height: 320px;
+    overflow: auto;
+    padding: 12px;
+  }
+  .msg {
+    max-width: 86%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 9px 10px;
+    background: var(--card);
+    color: var(--foreground);
+    font-size: 14px;
+  }
+  .msg.user {
+    justify-self: end;
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  .quick-replies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    border-top: 1px solid var(--border);
+    padding: 10px 12px 0;
+  }
+  .chip {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--secondary);
+    color: var(--foreground);
+    cursor: pointer;
+    padding: 7px 9px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .chat-form {
+    display: flex;
+    gap: 8px;
+    padding: 10px 12px 12px;
+  }
+  .chat-form input {
+    min-width: 0;
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--secondary);
+    color: var(--foreground);
+    padding: 10px;
+  }
+  .chat-form button { min-height: 38px; padding: 0 12px; }
+
+  @media (max-width: 900px) {
+    .nav { display: none; }
+    .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .service-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .quote-panel { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .container { width: min(100% - 24px, var(--max)); }
+    .header-inner { min-height: 64px; }
+    .brand-mark { width: 34px; height: 34px; font-size: 16px; }
+    .brand-name { font-size: 21px; }
+    .brand-sub { display: none; }
+    .header-actions .btn { display: none; }
+    .hero, .hero-inner { min-height: auto; }
+    .hero-inner { padding: 56px 0 76px; }
+    .hero h1 { font-size: 48px; }
+    .stats { grid-template-columns: 1fr; }
+    .stat {
+      border-right: 0;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+    }
+    .stat:last-child { border-bottom: 0; }
+    section { padding: 54px 0; }
+    .section-head { display: block; }
+    .section-head p { margin-top: 12px; }
+    .product-grid, .service-grid { grid-template-columns: 1fr; }
+    .product-footer { align-items: stretch; flex-direction: column; }
+    .product-footer .btn { width: 100%; }
+    .quote-panel { padding: 20px; }
+    .footer-inner { align-items: start; flex-direction: column; }
+    .chat { right: 12px; bottom: 12px; }
   }
 </style>
 </head>
 <body>
-
-<header>
-  <div class="logo">EISEN<span>HAUS</span></div>
-  <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20material" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+<header class="header">
+  <div class="container header-inner">
+    <a class="brand" href="#inicio" aria-label="EISENHAUS inicio">
+      <span class="brand-mark">EH</span>
+      <span>
+        <span class="brand-name">EISEN<span>HAUS</span></span>
+        <span class="brand-sub">Acero para obra</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Navegacion principal">
+      <a href="#catalogo">Catalogo</a>
+      <a href="#servicios">Servicio</a>
+      <a href="#cotizar">Cotizar</a>
+    </nav>
+    <div class="header-actions">
+      <a class="btn secondary" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20material%20EISENHAUS" target="_blank" rel="noopener">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.35 1.9.67 2.81a2 2 0 0 1-.45 2.11L8.06 9.91a16 16 0 0 0 6.03 6.03l1.27-1.27a2 2 0 0 1 2.11-.45c.91.32 1.85.54 2.81.67A2 2 0 0 1 22 16.92Z"/></svg>
+        WhatsApp
+      </a>
+      <button class="icon-btn" type="button" id="cartOpen" aria-label="Abrir cotizacion">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h8.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+        <span class="count" id="cartCount">0</span>
+      </button>
+    </div>
+  </div>
 </header>
 
-<section class="hero">
-  <div class="badge">Ventas a nivel nacional</div>
-  <h1>Materiales para <span>techo y estructura</span>, listos para tu obra</h1>
-  <p>Lámina galvanizada, Zintro Alum, plastiteja, polín y perfiles PTR. Cotiza por WhatsApp y te asesoramos según tu proyecto.</p>
-  <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20material" target="_blank" rel="noopener">Cotizar por WhatsApp</a>
-</section>
-
-<section class="products">
-  <h2>Nuestros productos</h2>
-  <p>Consulta medidas, calibres y disponibilidad por WhatsApp</p>
-  <div class="grid">
-
-    <div class="card">
-      <img src="assets/anuncio_galvanizada.png" alt="Lámina Galvanizada" loading="lazy" />
-      <div class="card-body">
-        <h3>Lámina Galvanizada</h3>
-        <p>Materiales para techo y cerramientos. Ancho de 1 m, corte según existencia.</p>
-        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20l%C3%A1mina%20galvanizada" target="_blank" rel="noopener">Cotizar</a>
+<main id="inicio">
+  <section class="hero" aria-labelledby="hero-title">
+    <img class="hero-img" src="assets/anuncio_zintro_alum_techo.png" alt="Lamina Zintro Alum instalada en techo metalico" />
+    <div class="container hero-inner">
+      <div class="hero-content">
+        <span class="eyebrow">Ventas a nivel nacional</span>
+        <h1 id="hero-title">Laminas y perfil <span>estructural</span> para obra seria</h1>
+        <p class="hero-copy">Surtimos galvanizada, Zintro Alum, plastiteja, polin C, PTR y perfiles rectangulares. Te ayudamos a armar la lista de material para techo, bodega, cochera o estructura ligera.</p>
+        <div class="hero-actions">
+          <a class="btn" href="#catalogo">Ver catalogo</a>
+          <button class="btn secondary" type="button" data-open-chat>Hablar con asesor</button>
+        </div>
+        <div class="stats" aria-label="Datos de servicio">
+          <div class="stat"><strong>10</strong><span>Lineas de producto</span></div>
+          <div class="stat"><strong>6 m</strong><span>Perfiles comerciales</span></div>
+          <div class="stat"><strong>MX</strong><span>Cobertura nacional</span></div>
+        </div>
       </div>
     </div>
+  </section>
 
-    <div class="card">
-      <img src="assets/anuncio_galvanizada_stock.png" alt="Lámina Galvanizada — varias medidas" loading="lazy" />
-      <div class="card-body">
-        <h3>Galvanizada — varias medidas</h3>
-        <p>Lista para obra, cochera y bodega. Pregunta largos disponibles.</p>
-        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20l%C3%A1mina%20galvanizada" target="_blank" rel="noopener">Cotizar</a>
+  <section id="catalogo" class="container" aria-labelledby="catalogo-title">
+    <div class="section-head">
+      <div>
+        <span class="section-kicker">Catalogo EISENHAUS</span>
+        <h2 id="catalogo-title">Material listo para cotizar</h2>
+      </div>
+      <p>Filtra por familia, agrega piezas a la cotizacion y manda la solicitud por WhatsApp con el resumen armado.</p>
+    </div>
+    <div class="filters" id="filters" aria-label="Filtros de catalogo"></div>
+    <div class="product-grid" id="productGrid"></div>
+  </section>
+
+  <section id="servicios" class="services" aria-labelledby="servicios-title">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="section-kicker">Servicio para obra</span>
+          <h2 id="servicios-title">Compra con medidas claras</h2>
+        </div>
+        <p>La venta de acero se gana en detalle: medidas, calibres, largos, cantidades y entrega bien aterrizada.</p>
+      </div>
+      <div class="service-grid">
+        <article class="service">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17h4V5H2v12h3"/><path d="M14 17h1V9h4l3 4v4h-3"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+          <h3>Entrega coordinada</h3>
+          <p>Armamos la salida segun volumen, ruta y tipo de material para evitar vueltas inutiles.</p>
+        </article>
+        <article class="service">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="m19 21 2-2"/><path d="m14 4 6 6"/></svg>
+          <h3>Corte y seleccion</h3>
+          <p>Te orientamos con largos, piezas y uso recomendado para techo, soporte o cerramiento.</p>
+        </article>
+        <article class="service">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.68 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1Z"/><path d="m9 12 2 2 4-4"/></svg>
+          <h3>Material confiable</h3>
+          <p>Productos comerciales para obra real: galvanizada, Zintro Alum, PTR, polin y plastiteja.</p>
+        </article>
+        <article class="service">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H7l-4 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/><path d="M8 9h8"/><path d="M8 13h5"/></svg>
+          <h3>Asesoria rapida</h3>
+          <p>El chat deja lista la necesidad y el asesor aterriza precio, existencia y envio.</p>
+        </article>
       </div>
     </div>
+  </section>
 
-    <div class="card">
-      <img src="assets/anuncio_galvanizada_uso.png" alt="Galvanizada para estructuras y cerramientos" loading="lazy" />
-      <div class="card-body">
-        <h3>Galvanizada — estructuras</h3>
-        <p>Ideal para techos ligeros. Consulta medida y existencia.</p>
-        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20l%C3%A1mina%20galvanizada" target="_blank" rel="noopener">Cotizar</a>
+  <section id="cotizar" class="quote-band" aria-labelledby="cotizar-title">
+    <div class="container quote-panel">
+      <div>
+        <span class="section-kicker">Cotizacion directa</span>
+        <h2 id="cotizar-title">Manda tu lista y acelera la compra</h2>
+        <p>Agrega productos desde el catalogo o escribe aqui lo que necesitas. El mensaje sale con contexto para que el equipo responda con medidas, disponibilidad y precio.</p>
+        <ul class="quote-list">
+          <li>Laminas para techo, cerramiento, bodega, cochera y terraza.</li>
+          <li>Perfil estructural en tramos comerciales para herreria y soporte.</li>
+          <li>Atencion por WhatsApp para cerrar medidas y entrega.</li>
+        </ul>
       </div>
+      <form class="contact-box" id="quoteForm">
+        <label>Nombre
+          <input id="leadName" name="name" autocomplete="name" placeholder="Tu nombre" />
+        </label>
+        <label>Telefono
+          <input id="leadPhone" name="phone" autocomplete="tel" placeholder="Numero de contacto" />
+        </label>
+        <label>Proyecto
+          <textarea id="leadNeed" name="need" placeholder="Ej. 18 laminas galvanizadas para cochera de 6 x 5 m"></textarea>
+        </label>
+        <button class="btn" type="submit">Enviar por WhatsApp</button>
+      </form>
     </div>
+  </section>
+</main>
 
-    <div class="card">
-      <img src="assets/anuncio_plastiteja.png" alt="Plastiteja" loading="lazy" />
-      <div class="card-body">
-        <h3>Plastiteja</h3>
-        <p>Medidas de 1.00x2.60 m a 1.00x7.28 m. Ideal para terrazas, cocheras y casas.</p>
-        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20plastiteja" target="_blank" rel="noopener">Cotizar</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <img src="assets/anuncio_polin_c_3pulgadas.png" alt="Polín C 3 pulgadas" loading="lazy" />
-      <div class="card-body">
-        <h3>Polín C — 3" x 6 m</h3>
-        <p>Perfil forma C, color anaranjado, para techumbres y estructuras.</p>
-        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20pol%C3%ADn%20C" target="_blank" rel="noopener">Cotizar</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <img src="assets/anuncio_ptr_verde_r300_r200.png" alt="PTR verde R300 R200" loading="lazy" />
-      <div class="card-body">
-        <h3>PTR R300 / R200 — 3" x 6 m</h3>
-        <p>Perfil tubular rectangular para estructuras, soportes y herrería.</p>
-        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20PTR" target="_blank" rel="noopener">Cotizar</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <img src="assets/anuncio_perfiles_rectangulares.png" alt="Perfiles rectangulares" loading="lazy" />
-      <div class="card-body">
-        <h3>Perfiles rectangulares</h3>
-        <p>Pintado y zintro, tramos de 6 m en varias medidas.</p>
-        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20perfiles%20rectangulares" target="_blank" rel="noopener">Cotizar</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <img src="assets/anuncio_zintro_alum.png" alt="Lámina Zintro Alum" loading="lazy" />
-      <div class="card-body">
-        <h3>Zintro Alum</h3>
-        <p>Resistente y lista para obra. Disponible en varias medidas.</p>
-        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20Zintro%20Alum" target="_blank" rel="noopener">Cotizar</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <img src="assets/anuncio_zintro_alum_stock.png" alt="Zintro Alum en existencia" loading="lazy" />
-      <div class="card-body">
-        <h3>Zintro Alum — en existencia</h3>
-        <p>Lámina acanalada lista para entrega inmediata.</p>
-        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20Zintro%20Alum" target="_blank" rel="noopener">Cotizar</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <img src="assets/anuncio_zintro_alum_techo.png" alt="Zintro Alum para techo" loading="lazy" />
-      <div class="card-body">
-        <h3>Zintro Alum — lámina para techo</h3>
-        <p>Acabado brillante y resistente. Ideal para nave, taller, cochera o bodega.</p>
-        <a class="btn" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20Zintro%20Alum" target="_blank" rel="noopener">Cotizar</a>
-      </div>
-    </div>
-
+<footer class="footer">
+  <div class="container footer-inner">
+    <p>EISENHAUS | Laminas y perfil estructural | Ventas a nivel nacional</p>
+    <a href="https://wa.me/14158735968" target="_blank" rel="noopener">WhatsApp +1 415 873 5968</a>
   </div>
-</section>
-
-<footer>
-  <p>EISENHAUS — Materiales para techo y estructura · Ventas a nivel nacional</p>
-  <p>Contacto: <a href="https://wa.me/14158735968" target="_blank" rel="noopener">WhatsApp +1 415 873 5968</a></p>
 </footer>
 
-<a class="btn wa-float" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20material" target="_blank" rel="noopener">WhatsApp</a>
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<aside class="drawer" id="cartDrawer" aria-label="Cotizacion" aria-hidden="true">
+  <div class="drawer-head">
+    <div>
+      <h2>Cotizacion</h2>
+      <p>Productos seleccionados para mandar por WhatsApp.</p>
+    </div>
+    <button class="icon-btn" type="button" id="cartClose" aria-label="Cerrar cotizacion">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body">
+    <div class="cart-items" id="cartItems"></div>
+  </div>
+  <div class="drawer-foot">
+    <div class="totals">
+      <div class="total-line"><span>Piezas</span><strong id="totalPieces">0</strong></div>
+      <div class="total-line"><span>Productos</span><strong id="totalProducts">0</strong></div>
+    </div>
+    <a class="btn" id="sendCart" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20material%20EISENHAUS" target="_blank" rel="noopener">Enviar cotizacion</a>
+  </div>
+</aside>
 
+<div class="chat" id="chat">
+  <section class="chat-panel" id="chatPanel" aria-label="Chat EISENHAUS">
+    <div class="chat-head">
+      <div>
+        <h2>Asesor EISENHAUS</h2>
+        <span class="status">pre-cotizacion</span>
+      </div>
+      <button class="icon-btn" type="button" data-close-chat aria-label="Cerrar chat">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="messages" id="messages"></div>
+    <div class="quick-replies">
+      <button class="chip" type="button" data-prompt="Quiero lamina para techo">Lamina para techo</button>
+      <button class="chip" type="button" data-prompt="Quiero PTR o perfil estructural">Perfil estructural</button>
+      <button class="chip" type="button" data-prompt="Quiero plastiteja">Plastiteja</button>
+    </div>
+    <form class="chat-form" id="chatForm">
+      <input id="chatInput" autocomplete="off" placeholder="Escribe tu proyecto" />
+      <button class="btn" type="submit" aria-label="Enviar mensaje">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+      </button>
+    </form>
+  </section>
+  <button class="icon-btn chat-toggle" type="button" data-open-chat aria-label="Abrir chat">
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H7l-4 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/><path d="M8 10h8"/><path d="M8 14h5"/></svg>
+  </button>
+</div>
+
+<script>
+const WHATSAPP = "14158735968";
+const CHAT_API_URL = "/api/chat";
+
+const products = [
+  {
+    id: "galvanizada",
+    name: "Lamina galvanizada",
+    category: "Lamina",
+    image: "assets/anuncio_galvanizada.png",
+    alt: "Lamina galvanizada EISENHAUS",
+    availability: "Sobre pedido",
+    intro: "Para techos, cerramientos, bodegas y obra ligera con acabado anticorrosivo.",
+    specs: [["Uso", "Techo y cerramiento"], ["Ancho", "1.00 m aprox."], ["Largos", "Segun existencia"]],
+    quote: "Cotizar lamina galvanizada"
+  },
+  {
+    id: "galvanizada-stock",
+    name: "Galvanizada varias medidas",
+    category: "Lamina",
+    image: "assets/anuncio_galvanizada_stock.png",
+    alt: "Lamina galvanizada en varias medidas",
+    availability: "Stock variable",
+    intro: "Opcion practica cuando necesitas resolver techo, taller o cochera rapido.",
+    specs: [["Formato", "Acanalada"], ["Ancho", "1.00 m aprox."], ["Entrega", "Validar ciudad"]],
+    quote: "Cotizar lamina galvanizada varias medidas"
+  },
+  {
+    id: "galvanizada-uso",
+    name: "Galvanizada para estructura",
+    category: "Lamina",
+    image: "assets/anuncio_galvanizada_uso.png",
+    alt: "Galvanizada aplicada en techo metalico",
+    availability: "Por confirmar",
+    intro: "Recomendada para cubiertas de nave, taller, cochera y ampliaciones.",
+    specs: [["Aplicacion", "Cubierta ligera"], ["Acabado", "Galvanizado"], ["Venta", "Por pieza"]],
+    quote: "Cotizar galvanizada para estructura"
+  },
+  {
+    id: "zintro-alum",
+    name: "Zintro Alum",
+    category: "Lamina",
+    image: "assets/anuncio_zintro_alum.png",
+    alt: "Lamina Zintro Alum",
+    availability: "Disponible",
+    intro: "Lamina resistente para proyectos que requieren mayor proteccion al clima.",
+    specs: [["Acabado", "Zintro Alum"], ["Uso", "Techo industrial"], ["Largos", "Varias medidas"]],
+    quote: "Cotizar lamina Zintro Alum"
+  },
+  {
+    id: "zintro-stock",
+    name: "Zintro Alum en existencia",
+    category: "Lamina",
+    image: "assets/anuncio_zintro_alum_stock.png",
+    alt: "Zintro Alum en existencia",
+    availability: "Existencia",
+    intro: "Acanalada, brillante y lista para surtir segun disponibilidad del momento.",
+    specs: [["Perfil", "Acanalado"], ["Venta", "Por pieza"], ["Uso", "Techo y bodega"]],
+    quote: "Cotizar Zintro Alum en existencia"
+  },
+  {
+    id: "zintro-techo",
+    name: "Zintro Alum para techo",
+    category: "Lamina",
+    image: "assets/anuncio_zintro_alum_techo.png",
+    alt: "Zintro Alum para techo instalado",
+    availability: "Alta demanda",
+    intro: "Para nave, taller, cochera o bodega donde importa la durabilidad.",
+    specs: [["Aplicacion", "Techo"], ["Acabado", "Aluminizado"], ["Asesoria", "Por medida"]],
+    quote: "Cotizar Zintro Alum para techo"
+  },
+  {
+    id: "plastiteja",
+    name: "Plastiteja roja",
+    category: "Teja",
+    image: "assets/anuncio_plastiteja.png",
+    alt: "Plastiteja roja",
+    availability: "Disponible",
+    intro: "Acabado tipo teja para terraza, casa, cochera y areas visibles.",
+    specs: [["Medidas", "1.00 x 2.60 a 7.28 m"], ["Color", "Rojo"], ["Uso", "Cubierta decorativa"]],
+    quote: "Cotizar plastiteja roja"
+  },
+  {
+    id: "polin-c",
+    name: "Polin C 3 pulgadas",
+    category: "Perfil",
+    image: "assets/anuncio_polin_c_3pulgadas.png",
+    alt: "Polin C de 3 pulgadas",
+    availability: "Tramo 6 m",
+    intro: "Perfil tipo C para techumbres, soportes y estructuras metalicas ligeras.",
+    specs: [["Perfil", "C"], ["Medida", "3 pulgadas"], ["Largo", "6 m"]],
+    quote: "Cotizar polin C de 3 pulgadas"
+  },
+  {
+    id: "ptr",
+    name: "PTR R300 / R200",
+    category: "Perfil",
+    image: "assets/anuncio_ptr_verde_r300_r200.png",
+    alt: "PTR verde R300 R200",
+    availability: "Tramo 6 m",
+    intro: "Perfil tubular rectangular para herreria, bastidores y estructura.",
+    specs: [["Tipo", "PTR"], ["Medida", "3 pulgadas"], ["Largo", "6 m"]],
+    quote: "Cotizar PTR R300 o R200"
+  },
+  {
+    id: "perfiles-rectangulares",
+    name: "Perfiles rectangulares",
+    category: "Perfil",
+    image: "assets/anuncio_perfiles_rectangulares.png",
+    alt: "Perfiles rectangulares pintados y zintro",
+    availability: "Varias medidas",
+    intro: "Pintado y zintro para soportes, herreria, marcos y estructura comercial.",
+    specs: [["Formato", "Rectangular"], ["Acabado", "Pintado / Zintro"], ["Largo", "6 m"]],
+    quote: "Cotizar perfiles rectangulares"
+  }
+];
+
+let activeFilter = "Todos";
+let cart = {};
+
+const moneyNote = "Precio por confirmar";
+const grid = document.getElementById("productGrid");
+const filters = document.getElementById("filters");
+const cartCount = document.getElementById("cartCount");
+const cartDrawer = document.getElementById("cartDrawer");
+const drawerBackdrop = document.getElementById("drawerBackdrop");
+const cartItems = document.getElementById("cartItems");
+const totalPieces = document.getElementById("totalPieces");
+const totalProducts = document.getElementById("totalProducts");
+const sendCart = document.getElementById("sendCart");
+const chatPanel = document.getElementById("chatPanel");
+const messages = document.getElementById("messages");
+
+function iconPlus() {
+  return '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>';
+}
+
+function iconMinus() {
+  return '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg>';
+}
+
+function renderFilters() {
+  const categories = ["Todos", ...new Set(products.map(product => product.category))];
+  filters.innerHTML = categories.map(category => `
+    <button class="filter ${category === activeFilter ? "active" : ""}" type="button" data-filter="${category}">${category}</button>
+  `).join("");
+}
+
+function renderProducts() {
+  const visible = activeFilter === "Todos" ? products : products.filter(product => product.category === activeFilter);
+  grid.innerHTML = visible.map(product => `
+    <article class="product-card">
+      <div class="product-media">
+        <img src="${product.image}" alt="${product.alt}" loading="lazy" width="1080" height="1080">
+      </div>
+      <div class="product-body">
+        <div class="product-top">
+          <span class="badge">${product.category}</span>
+          <span class="availability">${product.availability}</span>
+        </div>
+        <h3>${product.name}</h3>
+        <p>${product.intro}</p>
+        <ul class="specs">
+          ${product.specs.map(([label, value]) => `<li><span>${label}</span><b>${value}</b></li>`).join("")}
+        </ul>
+        <div class="product-footer">
+          <div class="price"><span>Cotizacion</span><strong>${moneyNote}</strong></div>
+          <button class="btn" type="button" data-add="${product.id}">${iconPlus()} Agregar</button>
+        </div>
+      </div>
+    </article>
+  `).join("");
+}
+
+function renderCart() {
+  const entries = Object.entries(cart).filter(([, qty]) => qty > 0);
+  const pieces = entries.reduce((sum, [, qty]) => sum + qty, 0);
+  cartCount.textContent = pieces;
+  totalPieces.textContent = pieces;
+  totalProducts.textContent = entries.length;
+
+  if (!entries.length) {
+    cartItems.innerHTML = '<div class="empty">Agrega productos del catalogo para armar tu cotizacion.</div>';
+  } else {
+    cartItems.innerHTML = entries.map(([id, qty]) => {
+      const product = products.find(item => item.id === id);
+      return `
+        <article class="cart-item">
+          <div class="cart-line">
+            <div>
+              <h3>${product.name}</h3>
+              <p>${product.category} | ${product.availability}</p>
+            </div>
+            <strong>${qty}</strong>
+          </div>
+          <div class="qty">
+            <button type="button" data-dec="${id}" aria-label="Quitar una pieza">${iconMinus()}</button>
+            <span>${qty} pza${qty === 1 ? "" : "s"}</span>
+            <button type="button" data-inc="${id}" aria-label="Agregar una pieza">${iconPlus()}</button>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  const text = entries.length
+    ? "Hola, quiero cotizar en EISENHAUS:\n" + entries.map(([id, qty]) => {
+        const product = products.find(item => item.id === id);
+        return `- ${qty} x ${product.name}`;
+      }).join("\n")
+    : "Hola, quiero cotizar material EISENHAUS";
+  sendCart.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
+}
+
+function openDrawer() {
+  cartDrawer.classList.add("open");
+  drawerBackdrop.classList.add("open");
+  cartDrawer.setAttribute("aria-hidden", "false");
+  document.body.classList.add("drawer-open");
+}
+
+function closeDrawer() {
+  cartDrawer.classList.remove("open");
+  drawerBackdrop.classList.remove("open");
+  cartDrawer.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("drawer-open");
+}
+
+function addToCart(id) {
+  cart[id] = (cart[id] || 0) + 1;
+  renderCart();
+  openDrawer();
+}
+
+function postMessage(text, role = "bot") {
+  const bubble = document.createElement("div");
+  bubble.className = `msg ${role === "user" ? "user" : ""}`;
+  bubble.textContent = text;
+  messages.appendChild(bubble);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function localChatReply(text) {
+  const lower = text.toLowerCase();
+  if (lower.includes("ptr") || lower.includes("perfil") || lower.includes("polin")) {
+    return "Para perfil estructural dime medida, largo, cantidad y ciudad de entrega. Manejamos polin C, PTR R300/R200 y perfiles rectangulares en tramos comerciales.";
+  }
+  if (lower.includes("plastiteja") || lower.includes("teja")) {
+    return "Para plastiteja confirma el area a cubrir o el largo por pieza. Tenemos referencia roja en medidas desde 1.00 x 2.60 m hasta 1.00 x 7.28 m.";
+  }
+  if (lower.includes("lamina") || lower.includes("techo") || lower.includes("galvanizada") || lower.includes("zintro")) {
+    return "Para lamina dime tipo de cubierta, largo requerido, ancho del area y ciudad. Con eso te orientamos entre galvanizada y Zintro Alum.";
+  }
+  return "Pasame material, cantidad aproximada, medidas y ciudad. Con eso dejamos lista la solicitud para cotizar precio, existencia y entrega.";
+}
+
+async function askChatbot(text) {
+  if (!CHAT_API_URL) return localChatReply(text);
+  const response = await fetch(CHAT_API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: text, products })
+  });
+  if (!response.ok) throw new Error("Chat API error");
+  const data = await response.json();
+  return data.reply || localChatReply(text);
+}
+
+function openChat() {
+  chatPanel.classList.add("open");
+  document.getElementById("chatInput").focus();
+}
+
+document.addEventListener("click", event => {
+  const filter = event.target.closest("[data-filter]");
+  if (filter) {
+    activeFilter = filter.dataset.filter;
+    renderFilters();
+    renderProducts();
+  }
+
+  const add = event.target.closest("[data-add]");
+  if (add) addToCart(add.dataset.add);
+
+  const inc = event.target.closest("[data-inc]");
+  if (inc) {
+    cart[inc.dataset.inc] = (cart[inc.dataset.inc] || 0) + 1;
+    renderCart();
+  }
+
+  const dec = event.target.closest("[data-dec]");
+  if (dec) {
+    cart[dec.dataset.dec] = Math.max(0, (cart[dec.dataset.dec] || 0) - 1);
+    renderCart();
+  }
+
+  if (event.target.closest("[data-open-chat]")) openChat();
+  if (event.target.closest("[data-close-chat]")) chatPanel.classList.remove("open");
+
+  const prompt = event.target.closest("[data-prompt]");
+  if (prompt) {
+    document.getElementById("chatInput").value = prompt.dataset.prompt;
+    document.getElementById("chatForm").requestSubmit();
+  }
+});
+
+document.getElementById("cartOpen").addEventListener("click", openDrawer);
+document.getElementById("cartClose").addEventListener("click", closeDrawer);
+drawerBackdrop.addEventListener("click", closeDrawer);
+
+document.getElementById("quoteForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const name = document.getElementById("leadName").value.trim();
+  const phone = document.getElementById("leadPhone").value.trim();
+  const need = document.getElementById("leadNeed").value.trim();
+  const text = [
+    "Hola, quiero cotizar en EISENHAUS.",
+    name ? `Nombre: ${name}` : "",
+    phone ? `Telefono: ${phone}` : "",
+    need ? `Proyecto: ${need}` : ""
+  ].filter(Boolean).join("\n");
+  window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+});
+
+document.getElementById("chatForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  const input = document.getElementById("chatInput");
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = "";
+  postMessage(text, "user");
+  try {
+    postMessage(await askChatbot(text), "bot");
+  } catch {
+    postMessage(localChatReply(text), "bot");
+  }
+});
+
+postMessage("Soy el asesor EISENHAUS. Dime que vas a construir, medidas aproximadas y ciudad de entrega.");
+renderFilters();
+renderProducts();
+renderCart();
+</script>
 </body>
 </html>
