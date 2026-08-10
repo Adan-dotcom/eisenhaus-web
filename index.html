@@ -356,6 +356,20 @@
     transition: transform .25s ease;
   }
   .product-card:hover .product-media img { transform: scale(1.035); }
+  .no-photo {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    color: var(--muted-foreground);
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 0 16px;
+  }
   .badge {
     display: inline-flex;
     align-items: center;
@@ -597,6 +611,18 @@
     display: grid;
     gap: 10px;
   }
+  .cart-total {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+    padding-top: 12px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .cart-total strong { color: var(--accent); }
   .cart-item {
     display: grid;
     gap: 10px;
@@ -998,43 +1024,101 @@ const CHAT_API_URL = "/api/chat";
 
 const products = [
   {
-    id: "galvanizada",
-    name: "Lamina galvanizada",
+    id: "galvanizada-610",
+    name: "Lamina galvanizada 6.10 x 0.82 m",
     category: "Lamina",
-    image: "assets/anuncio_galvanizada.png",
-    alt: "Lamina galvanizada EISENHAUS",
-    availability: "Sobre pedido",
-    intro: "Para techos, cerramientos, bodegas y obra ligera con acabado anticorrosivo.",
-    specs: [["Uso", "Techo y cerramiento"], ["Ancho", "1.00 m aprox."], ["Largos", "Segun existencia"]],
-    quote: "Cotizar lamina galvanizada"
+    image: "assets/productos/galvanizada.jpeg",
+    alt: "Lamina galvanizada calibre 28",
+    availability: "Disponible",
+    price: 800,
+    unit: "pieza",
+    intro: "Calibre 28, acabado anticorrosivo para techo, cerramiento y bodega.",
+    specs: [["Medida", "6.10 m x 82 cm"], ["Calibre", "28"], ["Venta", "Por pieza"]],
+    quote: "Cotizar lamina galvanizada 6.10 m"
   },
   {
-    id: "galvanizada-stock",
-    name: "Galvanizada varias medidas",
+    id: "galvanizada-550",
+    name: "Lamina galvanizada 5.50 x 0.82 m",
     category: "Lamina",
-    image: "assets/anuncio_galvanizada_stock.png",
-    alt: "Lamina galvanizada en varias medidas",
-    availability: "Stock variable",
-    intro: "Opcion practica cuando necesitas resolver techo, taller o cochera rapido.",
-    specs: [["Formato", "Acanalada"], ["Ancho", "1.00 m aprox."], ["Entrega", "Validar ciudad"]],
-    quote: "Cotizar lamina galvanizada varias medidas"
+    image: "assets/productos/galvanizada.jpeg",
+    alt: "Lamina galvanizada calibre 28",
+    availability: "Disponible",
+    price: 785,
+    unit: "pieza",
+    intro: "Calibre 28, acabado anticorrosivo para techo, cerramiento y bodega.",
+    specs: [["Medida", "5.50 m x 82 cm"], ["Calibre", "28"], ["Venta", "Por pieza"]],
+    quote: "Cotizar lamina galvanizada 5.50 m"
   },
   {
-    id: "galvanizada-uso",
-    name: "Galvanizada para estructura",
+    id: "galvanizada-488",
+    name: "Lamina galvanizada 4.88 x 0.82 m",
     category: "Lamina",
-    image: "assets/anuncio_galvanizada_uso.png",
-    alt: "Galvanizada aplicada en techo metalico",
-    availability: "Por confirmar",
-    intro: "Recomendada para cubiertas de nave, taller, cochera y ampliaciones.",
-    specs: [["Aplicacion", "Cubierta ligera"], ["Acabado", "Galvanizado"], ["Venta", "Por pieza"]],
-    quote: "Cotizar galvanizada para estructura"
+    image: "assets/productos/galvanizada.jpeg",
+    alt: "Lamina galvanizada calibre 28",
+    availability: "Disponible",
+    price: 660,
+    unit: "pieza",
+    intro: "Calibre 28, acabado anticorrosivo para techo, cerramiento y bodega.",
+    specs: [["Medida", "4.88 m x 82 cm"], ["Calibre", "28"], ["Venta", "Por pieza"]],
+    quote: "Cotizar lamina galvanizada 4.88 m"
+  },
+  {
+    id: "galvanizada-427",
+    name: "Lamina galvanizada 4.27 x 0.82 m",
+    category: "Lamina",
+    image: "assets/productos/galvanizada.jpeg",
+    alt: "Lamina galvanizada calibre 28",
+    availability: "Disponible",
+    price: 580,
+    unit: "pieza",
+    intro: "Calibre 28, acabado anticorrosivo para techo, cerramiento y bodega.",
+    specs: [["Medida", "4.27 m x 82 cm"], ["Calibre", "28"], ["Venta", "Por pieza"]],
+    quote: "Cotizar lamina galvanizada 4.27 m"
+  },
+  {
+    id: "galvanizada-366",
+    name: "Lamina galvanizada 3.66 x 0.82 m",
+    category: "Lamina",
+    image: "assets/productos/galvanizada.jpeg",
+    alt: "Lamina galvanizada calibre 28",
+    availability: "Disponible",
+    price: 510,
+    unit: "pieza",
+    intro: "Calibre 28, acabado anticorrosivo para techo, cerramiento y bodega.",
+    specs: [["Medida", "3.66 m x 82 cm"], ["Calibre", "28"], ["Venta", "Por pieza"]],
+    quote: "Cotizar lamina galvanizada 3.66 m"
+  },
+  {
+    id: "galvanizada-305",
+    name: "Lamina galvanizada 3.05 x 0.82 m",
+    category: "Lamina",
+    image: "assets/productos/galvanizada.jpeg",
+    alt: "Lamina galvanizada calibre 28",
+    availability: "Disponible",
+    price: 425,
+    unit: "pieza",
+    intro: "Calibre 28, acabado anticorrosivo para techo, cerramiento y bodega.",
+    specs: [["Medida", "3.05 m x 82 cm"], ["Calibre", "28"], ["Venta", "Por pieza"]],
+    quote: "Cotizar lamina galvanizada 3.05 m"
+  },
+  {
+    id: "galvanizada-244",
+    name: "Lamina galvanizada 2.44 x 0.82 m",
+    category: "Lamina",
+    image: "assets/productos/galvanizada.jpeg",
+    alt: "Lamina galvanizada calibre 28",
+    availability: "Disponible",
+    price: 360,
+    unit: "pieza",
+    intro: "Calibre 28, acabado anticorrosivo para techo, cerramiento y bodega.",
+    specs: [["Medida", "2.44 m x 82 cm"], ["Calibre", "28"], ["Venta", "Por pieza"]],
+    quote: "Cotizar lamina galvanizada 2.44 m"
   },
   {
     id: "zintro-alum",
     name: "Zintro Alum",
     category: "Lamina",
-    image: "assets/anuncio_zintro_alum.png",
+    image: "assets/anuncio_zintro_alum_techo.png",
     alt: "Lamina Zintro Alum",
     availability: "Disponible",
     intro: "Lamina resistente para proyectos que requieren mayor proteccion al clima.",
@@ -1042,48 +1126,108 @@ const products = [
     quote: "Cotizar lamina Zintro Alum"
   },
   {
-    id: "zintro-stock",
-    name: "Zintro Alum en existencia",
-    category: "Lamina",
-    image: "assets/anuncio_zintro_alum_stock.png",
-    alt: "Zintro Alum en existencia",
-    availability: "Existencia",
-    intro: "Acanalada, brillante y lista para surtir segun disponibilidad del momento.",
-    specs: [["Perfil", "Acanalado"], ["Venta", "Por pieza"], ["Uso", "Techo y bodega"]],
-    quote: "Cotizar Zintro Alum en existencia"
-  },
-  {
-    id: "zintro-techo",
-    name: "Zintro Alum para techo",
-    category: "Lamina",
-    image: "assets/anuncio_zintro_alum_techo.png",
-    alt: "Zintro Alum para techo instalado",
-    availability: "Alta demanda",
-    intro: "Para nave, taller, cochera o bodega donde importa la durabilidad.",
-    specs: [["Aplicacion", "Techo"], ["Acabado", "Aluminizado"], ["Asesoria", "Por medida"]],
-    quote: "Cotizar Zintro Alum para techo"
-  },
-  {
-    id: "plastiteja",
-    name: "Plastiteja roja",
+    id: "plastiteja-600",
+    name: "Plastiteja roja 6.0 x 1.05 m",
     category: "Teja",
-    image: "assets/anuncio_plastiteja.png",
+    image: "assets/productos/plastiteja.jpeg",
     alt: "Plastiteja roja",
     availability: "Disponible",
-    intro: "Acabado tipo teja para terraza, casa, cochera y areas visibles.",
-    specs: [["Medidas", "1.00 x 2.60 a 7.28 m"], ["Color", "Rojo"], ["Uso", "Cubierta decorativa"]],
-    quote: "Cotizar plastiteja roja"
+    price: 1430,
+    unit: "pieza",
+    intro: "Plastiteja premium 5 mm, acabado tipo teja para casa, cochera y areas visibles.",
+    specs: [["Medida", "6.0 m x 1.05 m"], ["Espesor", "5 mm"], ["Color", "Rojo"]],
+    quote: "Cotizar plastiteja 6.0 m"
   },
   {
-    id: "polin-c",
-    name: "Polin C 3 pulgadas",
+    id: "plastiteja-500",
+    name: "Plastiteja roja 5.0 x 1.05 m",
+    category: "Teja",
+    image: "assets/productos/plastiteja.jpeg",
+    alt: "Plastiteja roja",
+    availability: "Disponible",
+    price: 1200,
+    unit: "pieza",
+    intro: "Plastiteja premium 5 mm, acabado tipo teja para casa, cochera y areas visibles.",
+    specs: [["Medida", "5.0 m x 1.05 m"], ["Espesor", "5 mm"], ["Color", "Rojo"]],
+    quote: "Cotizar plastiteja 5.0 m"
+  },
+  {
+    id: "plastiteja-400",
+    name: "Plastiteja roja 4.0 x 1.05 m",
+    category: "Teja",
+    image: "assets/productos/plastiteja.jpeg",
+    alt: "Plastiteja roja",
+    availability: "Disponible",
+    price: 970,
+    unit: "pieza",
+    intro: "Plastiteja premium 5 mm, acabado tipo teja para casa, cochera y areas visibles.",
+    specs: [["Medida", "4.0 m x 1.05 m"], ["Espesor", "5 mm"], ["Color", "Rojo"]],
+    quote: "Cotizar plastiteja 4.0 m"
+  },
+  {
+    id: "plastiteja-300",
+    name: "Plastiteja roja 3.0 x 1.05 m",
+    category: "Teja",
+    image: "assets/productos/plastiteja.jpeg",
+    alt: "Plastiteja roja",
+    availability: "Disponible",
+    price: 740,
+    unit: "pieza",
+    intro: "Plastiteja premium 5 mm, acabado tipo teja para casa, cochera y areas visibles.",
+    specs: [["Medida", "3.0 m x 1.05 m"], ["Espesor", "5 mm"], ["Color", "Rojo"]],
+    quote: "Cotizar plastiteja 3.0 m"
+  },
+  {
+    id: "plastiteja-200",
+    name: "Plastiteja roja 2.0 x 1.05 m",
+    category: "Teja",
+    image: "assets/productos/plastiteja.jpeg",
+    alt: "Plastiteja roja",
+    availability: "Disponible",
+    price: 510,
+    unit: "pieza",
+    intro: "Plastiteja premium 5 mm, acabado tipo teja para casa, cochera y areas visibles.",
+    specs: [["Medida", "2.0 m x 1.05 m"], ["Espesor", "5 mm"], ["Color", "Rojo"]],
+    quote: "Cotizar plastiteja 2.0 m"
+  },
+  {
+    id: "caballete-plastiteja",
+    name: "Caballete de plastiteja",
+    category: "Teja",
+    image: "assets/productos/plastiteja.jpeg",
+    alt: "Caballete de plastiteja roja",
+    availability: "Disponible",
+    price: 600,
+    unit: "pieza",
+    intro: "Remate para cumbrera, mismo acabado premium que la plastiteja roja.",
+    specs: [["Medida", "1.90 m x 80 cm"], ["Color", "Rojo"], ["Uso", "Cumbrera"]],
+    quote: "Cotizar caballete de plastiteja"
+  },
+  {
+    id: "polin-c-3",
+    name: "Polin C tipo 3",
     category: "Perfil",
-    image: "assets/anuncio_polin_c_3pulgadas.png",
-    alt: "Polin C de 3 pulgadas",
-    availability: "Tramo 6 m",
+    image: "assets/productos/polin-c.jpeg",
+    alt: "Polin C tipo",
+    availability: "Disponible",
+    price: 620,
+    unit: "pieza",
     intro: "Perfil tipo C para techumbres, soportes y estructuras metalicas ligeras.",
-    specs: [["Perfil", "C"], ["Medida", "3 pulgadas"], ["Largo", "6 m"]],
-    quote: "Cotizar polin C de 3 pulgadas"
+    specs: [["Perfil", "C"], ["Medida", "Tipo 3"], ["Largo", "6 m"]],
+    quote: "Cotizar polin C tipo 3"
+  },
+  {
+    id: "polin-c-4",
+    name: "Polin C tipo 4",
+    category: "Perfil",
+    image: "assets/productos/polin-c.jpeg",
+    alt: "Polin C tipo",
+    availability: "Disponible",
+    price: 720,
+    unit: "pieza",
+    intro: "Perfil tipo C para techumbres, soportes y estructuras metalicas ligeras.",
+    specs: [["Perfil", "C"], ["Medida", "Tipo 4"], ["Largo", "6 m"]],
+    quote: "Cotizar polin C tipo 4"
   },
   {
     id: "ptr",
@@ -1106,6 +1250,19 @@ const products = [
     intro: "Pintado y zintro para soportes, herreria, marcos y estructura comercial.",
     specs: [["Formato", "Rectangular"], ["Acabado", "Pintado / Zintro"], ["Largo", "6 m"]],
     quote: "Cotizar perfiles rectangulares"
+  },
+  {
+    id: "pija-punta-broca",
+    name: "Pija punta de broca",
+    category: "Ferreteria",
+    image: null,
+    alt: "Pija punta de broca",
+    availability: "Disponible",
+    price: 180,
+    unit: "ciento",
+    intro: "Tornillo autoperforante para fijar lamina y plastiteja a estructura metalica.",
+    specs: [["Presentacion", "Ciento"], ["Uso", "Fijacion de lamina"]],
+    quote: "Cotizar pijas punta de broca"
   }
 ];
 
@@ -1141,12 +1298,18 @@ function renderFilters() {
   `).join("");
 }
 
+function formatPrice(value) {
+  return value.toLocaleString("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 });
+}
+
 function renderProducts() {
   const visible = activeFilter === "Todos" ? products : products.filter(product => product.category === activeFilter);
   grid.innerHTML = visible.map(product => `
-    <article class="product-card">
+    <article class="product-card" id="${product.id}">
       <div class="product-media">
-        <img src="${product.image}" alt="${product.alt}" loading="lazy" width="1080" height="1080">
+        ${product.image
+          ? `<img src="${product.image}" alt="${product.alt}" loading="lazy" width="1080" height="1080">`
+          : `<div class="no-photo" role="img" aria-label="${product.alt}">Foto proximamente</div>`}
       </div>
       <div class="product-body">
         <div class="product-top">
@@ -1159,7 +1322,10 @@ function renderProducts() {
           ${product.specs.map(([label, value]) => `<li><span>${label}</span><b>${value}</b></li>`).join("")}
         </ul>
         <div class="product-footer">
-          <div class="price"><span>Cotizacion</span><strong>${moneyNote}</strong></div>
+          <div class="price">
+            <span>${product.price ? "Precio" : "Cotizacion"}</span>
+            <strong>${product.price ? `${formatPrice(product.price)} / ${product.unit}` : moneyNote}</strong>
+          </div>
           <button class="btn" type="button" data-add="${product.id}">${iconPlus()} Agregar</button>
         </div>
       </div>
@@ -1170,6 +1336,10 @@ function renderProducts() {
 function renderCart() {
   const entries = Object.entries(cart).filter(([, qty]) => qty > 0);
   const pieces = entries.reduce((sum, [, qty]) => sum + qty, 0);
+  const total = entries.reduce((sum, [id, qty]) => {
+    const product = products.find(item => item.id === id);
+    return sum + (product.price ? product.price * qty : 0);
+  }, 0);
   cartCount.textContent = pieces;
   totalPieces.textContent = pieces;
   totalProducts.textContent = entries.length;
@@ -1184,7 +1354,7 @@ function renderCart() {
           <div class="cart-line">
             <div>
               <h3>${product.name}</h3>
-              <p>${product.category} | ${product.availability}</p>
+              <p>${product.category} | ${product.price ? `${formatPrice(product.price)} / ${product.unit}` : product.availability}</p>
             </div>
             <strong>${qty}</strong>
           </div>
@@ -1195,14 +1365,15 @@ function renderCart() {
           </div>
         </article>
       `;
-    }).join("");
+    }).join("") + (total > 0 ? `<div class="cart-total">Total estimado: <strong>${formatPrice(total)}</strong></div>` : "");
   }
 
   const text = entries.length
     ? "Hola, quiero cotizar en EISENHAUS:\n" + entries.map(([id, qty]) => {
         const product = products.find(item => item.id === id);
-        return `- ${qty} x ${product.name}`;
-      }).join("\n")
+        const linePrice = product.price ? ` (${formatPrice(product.price)} c/u)` : "";
+        return `- ${qty} x ${product.name}${linePrice}`;
+      }).join("\n") + (total > 0 ? `\nTotal estimado: ${formatPrice(total)}` : "")
     : "Hola, quiero cotizar material EISENHAUS";
   sendCart.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
 }
