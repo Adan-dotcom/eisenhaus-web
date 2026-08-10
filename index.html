@@ -356,6 +356,11 @@
     transition: transform .25s ease;
   }
   .product-card:hover .product-media img { transform: scale(1.035); }
+  .price-note {
+    color: var(--muted-foreground);
+    font-size: 11px;
+    line-height: 1.4;
+  }
   .no-photo {
     display: grid;
     place-items: center;
@@ -1321,9 +1326,10 @@ function renderProducts() {
         <ul class="specs">
           ${product.specs.map(([label, value]) => `<li><span>${label}</span><b>${value}</b></li>`).join("")}
         </ul>
+        ${product.price ? '<p class="price-note">Precio para Navojoa. En Hermosillo puede variar, confirmamos por WhatsApp.</p>' : ""}
         <div class="product-footer">
           <div class="price">
-            <span>${product.price ? "Precio" : "Cotizacion"}</span>
+            <span>${product.price ? "Precio Navojoa" : "Cotizacion"}</span>
             <strong>${product.price ? `${formatPrice(product.price)} / ${product.unit}` : moneyNote}</strong>
           </div>
           <button class="btn" type="button" data-add="${product.id}">${iconPlus()} Agregar</button>
@@ -1365,7 +1371,7 @@ function renderCart() {
           </div>
         </article>
       `;
-    }).join("") + (total > 0 ? `<div class="cart-total">Total estimado: <strong>${formatPrice(total)}</strong></div>` : "");
+    }).join("") + (total > 0 ? `<div class="cart-total">Total estimado (precio Navojoa): <strong>${formatPrice(total)}</strong></div>` : "");
   }
 
   const text = entries.length
@@ -1373,7 +1379,7 @@ function renderCart() {
         const product = products.find(item => item.id === id);
         const linePrice = product.price ? ` (${formatPrice(product.price)} c/u)` : "";
         return `- ${qty} x ${product.name}${linePrice}`;
-      }).join("\n") + (total > 0 ? `\nTotal estimado: ${formatPrice(total)}` : "")
+      }).join("\n") + (total > 0 ? `\nTotal estimado (precio Navojoa, confirmar en Hermosillo): ${formatPrice(total)}` : "")
     : "Hola, quiero cotizar material EISENHAUS";
   sendCart.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
 }
