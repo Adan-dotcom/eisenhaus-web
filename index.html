@@ -805,6 +805,59 @@
     padding: 10px;
   }
   .chat-form button { min-height: 38px; padding: 0 12px; }
+  .msg-action { margin-top: -2px; }
+  .msg-action .btn { min-height: 32px; padding: 0 10px; font-size: 12px; }
+
+  .checkout {
+    display: grid;
+    gap: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 14px;
+    padding-top: 14px;
+  }
+  .checkout h3 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 16px;
+  }
+  .checkout-row { display: grid; gap: 6px; }
+  .checkout-row > label {
+    color: var(--muted-foreground);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+  }
+  .checkout-row input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--secondary);
+    color: var(--foreground);
+    padding: 10px 12px;
+  }
+  .checkout-row input[type="checkbox"] { width: auto; }
+  .radio-group { display: flex; gap: 14px; flex-wrap: wrap; }
+  .radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--foreground);
+    text-transform: none;
+    font-weight: 500;
+    letter-spacing: normal;
+  }
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .checkout-note { font-size: 12px; color: var(--muted-foreground); }
+  .checkout-note.error { color: var(--primary); }
+  .checkout-note.ok { color: var(--accent); }
+  .invoice-fields { display: none; gap: 10px; }
+  .invoice-fields.open { display: grid; }
 
   @media (max-width: 900px) {
     .nav { display: none; }
@@ -984,13 +1037,59 @@
   </div>
   <div class="drawer-body">
     <div class="cart-items" id="cartItems"></div>
+    <div class="checkout" id="checkout">
+      <h3>Datos de entrega y pago</h3>
+      <div class="checkout-row">
+        <label for="checkoutName">Nombre</label>
+        <input id="checkoutName" autocomplete="name" placeholder="Tu nombre" />
+      </div>
+      <div class="checkout-row">
+        <label for="checkoutContact">Telefono o correo</label>
+        <input id="checkoutContact" autocomplete="tel" placeholder="Numero o correo" />
+      </div>
+      <div class="checkout-row">
+        <label for="checkoutCity">Ciudad de entrega</label>
+        <input id="checkoutCity" placeholder="Ej. Guaymas" />
+        <span class="checkout-note" id="checkoutCoverageNote"></span>
+      </div>
+      <div class="checkout-row">
+        <label for="checkoutAddress">Direccion (opcional)</label>
+        <input id="checkoutAddress" placeholder="Calle, numero, referencias" />
+      </div>
+      <div class="checkout-row">
+        <label>Pago</label>
+        <div class="radio-group">
+          <label><input type="radio" name="paymentMethod" value="cod" checked /> Contra entrega</label>
+          <label><input type="radio" name="paymentMethod" value="stripe" /> Pagar en linea</label>
+        </div>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="checkoutInvoice" />
+        <label for="checkoutInvoice">Quiero factura</label>
+      </div>
+      <div class="checkout-row" id="invoiceTimingRow" style="display:none">
+        <label>Factura</label>
+        <div class="radio-group">
+          <label><input type="radio" name="invoiceTiming" value="checkout" checked /> Ahora</label>
+          <label><input type="radio" name="invoiceTiming" value="delivery" /> En la entrega</label>
+        </div>
+      </div>
+      <div class="invoice-fields" id="invoiceFields">
+        <div class="checkout-row"><label for="invoiceRazon">Razon social</label><input id="invoiceRazon" /></div>
+        <div class="checkout-row"><label for="invoiceRfc">RFC</label><input id="invoiceRfc" /></div>
+        <div class="checkout-row"><label for="invoiceUso">Uso CFDI</label><input id="invoiceUso" placeholder="Ej. G03" /></div>
+        <div class="checkout-row"><label for="invoiceEmail">Correo para factura</label><input id="invoiceEmail" type="email" /></div>
+      </div>
+      <span class="checkout-note" id="checkoutStatus"></span>
+      <button class="btn" type="button" id="checkoutSubmit">Confirmar pedido</button>
+    </div>
   </div>
   <div class="drawer-foot">
     <div class="totals">
       <div class="total-line"><span>Piezas</span><strong id="totalPieces">0</strong></div>
       <div class="total-line"><span>Productos</span><strong id="totalProducts">0</strong></div>
     </div>
-    <a class="btn" id="sendCart" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20material%20EISENHAUS" target="_blank" rel="noopener">Enviar cotizacion</a>
+    <a class="btn secondary" id="sendCart" href="https://wa.me/14158735968?text=Hola%2C%20quiero%20cotizar%20material%20EISENHAUS" target="_blank" rel="noopener">O envialo directo por WhatsApp</a>
   </div>
 </aside>
 
@@ -1235,15 +1334,17 @@ const products = [
     quote: "Cotizar polin C tipo 4"
   },
   {
-    id: "ptr",
-    name: "PTR R300 / R200",
+    id: "ptr-ternium-3x1.5",
+    name: "PTR Ternium 3 x 1.5 pulgadas",
     category: "Perfil",
-    image: "assets/anuncio_ptr_verde_r300_r200.png",
-    alt: "PTR verde R300 R200",
-    availability: "Tramo 6 m",
-    intro: "Perfil tubular rectangular para herreria, bastidores y estructura.",
-    specs: [["Tipo", "PTR"], ["Medida", "3 pulgadas"], ["Largo", "6 m"]],
-    quote: "Cotizar PTR R300 o R200"
+    image: "assets/productos/ptr.jpeg",
+    alt: "PTR Ternium 3 x 1.5 pulgadas",
+    availability: "Disponible",
+    price: 500,
+    unit: "pieza",
+    intro: "Perfil tubular rectangular Ternium para herreria, bastidores y estructura ligera, tramo comercial de 6 m.",
+    specs: [["Marca", "Ternium"], ["Medida", "3 x 1.5 pulgadas (76.2 x 38.1 mm)"], ["Calibre", "18 (~1.2 mm de pared)"], ["Largo", "6 m"]],
+    quote: "Cotizar PTR Ternium 3 x 1.5"
   },
   {
     id: "perfiles-rectangulares",
@@ -1260,7 +1361,7 @@ const products = [
     id: "pija-punta-broca",
     name: "Pija punta de broca",
     category: "Ferreteria",
-    image: null,
+    image: "assets/productos/pija.jpeg",
     alt: "Pija punta de broca",
     availability: "Disponible",
     price: 180,
@@ -1404,11 +1505,25 @@ function addToCart(id) {
   openDrawer();
 }
 
-function postMessage(text, role = "bot") {
+function postMessage(text, role = "bot", action = null) {
   const bubble = document.createElement("div");
   bubble.className = `msg ${role === "user" ? "user" : ""}`;
   bubble.textContent = text;
   messages.appendChild(bubble);
+
+  if (action?.type === "whatsapp" && action.url) {
+    const wrap = document.createElement("div");
+    wrap.className = "msg-action";
+    const link = document.createElement("a");
+    link.className = "btn secondary";
+    link.href = action.url;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.textContent = action.label || "Enviar por WhatsApp";
+    wrap.appendChild(link);
+    messages.appendChild(wrap);
+  }
+
   messages.scrollTop = messages.scrollHeight;
 }
 
@@ -1426,16 +1541,25 @@ function localChatReply(text) {
   return "Pasame material, cantidad aproximada, medidas y ciudad. Con eso dejamos lista la solicitud para cotizar precio, existencia y entrega.";
 }
 
+function cartPayload() {
+  return Object.entries(cart)
+    .filter(([, qty]) => qty > 0)
+    .map(([id, qty]) => {
+      const product = products.find(item => item.id === id);
+      return { id, name: product?.name, qty, price: product?.price, unit: product?.unit };
+    });
+}
+
 async function askChatbot(text) {
-  if (!CHAT_API_URL) return localChatReply(text);
+  if (!CHAT_API_URL) return { reply: localChatReply(text), action: null };
   const response = await fetch(CHAT_API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: text, products, history: chatHistory.slice(-8) })
+    body: JSON.stringify({ message: text, products, cart: cartPayload(), history: chatHistory.slice(-8) })
   });
   if (!response.ok) throw new Error("Chat API error");
   const data = await response.json();
-  return data.reply || localChatReply(text);
+  return { reply: data.reply || localChatReply(text), action: data.action || null };
 }
 
 function openChat() {
@@ -1494,6 +1618,115 @@ document.getElementById("quoteForm").addEventListener("submit", event => {
   window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
 });
 
+const checkoutCity = document.getElementById("checkoutCity");
+const checkoutCoverageNote = document.getElementById("checkoutCoverageNote");
+const checkoutInvoice = document.getElementById("checkoutInvoice");
+const invoiceTimingRow = document.getElementById("invoiceTimingRow");
+const invoiceFields = document.getElementById("invoiceFields");
+const checkoutStatus = document.getElementById("checkoutStatus");
+
+function updateInvoiceFieldsVisibility() {
+  const timingNow = document.querySelector('input[name="invoiceTiming"]:checked')?.value === "checkout";
+  invoiceFields.classList.toggle("open", checkoutInvoice.checked && timingNow);
+}
+
+checkoutInvoice.addEventListener("change", () => {
+  invoiceTimingRow.style.display = checkoutInvoice.checked ? "grid" : "none";
+  updateInvoiceFieldsVisibility();
+});
+
+document.querySelectorAll('input[name="invoiceTiming"]').forEach(radio => {
+  radio.addEventListener("change", updateInvoiceFieldsVisibility);
+});
+
+checkoutCity.addEventListener("blur", async () => {
+  const city = checkoutCity.value.trim();
+  if (!city) {
+    checkoutCoverageNote.textContent = "";
+    return;
+  }
+  checkoutCoverageNote.textContent = "Verificando cobertura...";
+  checkoutCoverageNote.className = "checkout-note";
+  try {
+    const response = await fetch("/api/coverage", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ city })
+    });
+    const data = await response.json();
+    checkoutCoverageNote.textContent = data.message || "";
+    checkoutCoverageNote.className = `checkout-note ${data.covered ? "ok" : "error"}`;
+  } catch {
+    checkoutCoverageNote.textContent = "No se pudo verificar cobertura ahorita.";
+    checkoutCoverageNote.className = "checkout-note error";
+  }
+});
+
+document.getElementById("checkoutSubmit").addEventListener("click", async () => {
+  const entries = Object.entries(cart).filter(([, qty]) => qty > 0);
+  if (!entries.length) {
+    checkoutStatus.textContent = "Agrega productos al carrito primero.";
+    checkoutStatus.className = "checkout-note error";
+    return;
+  }
+
+  const nombre = document.getElementById("checkoutName").value.trim();
+  const contacto = document.getElementById("checkoutContact").value.trim();
+  const ciudad = checkoutCity.value.trim();
+  const direccion = document.getElementById("checkoutAddress").value.trim();
+  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+  const invoiceRequested = checkoutInvoice.checked;
+  const invoiceTiming = document.querySelector('input[name="invoiceTiming"]:checked')?.value || "delivery";
+
+  if (!nombre || !contacto || !ciudad) {
+    checkoutStatus.textContent = "Falta nombre, contacto o ciudad de entrega.";
+    checkoutStatus.className = "checkout-note error";
+    return;
+  }
+
+  const invoice = invoiceRequested && invoiceTiming === "checkout" ? {
+    razonSocial: document.getElementById("invoiceRazon").value.trim(),
+    rfc: document.getElementById("invoiceRfc").value.trim(),
+    usoCfdi: document.getElementById("invoiceUso").value.trim(),
+    email: document.getElementById("invoiceEmail").value.trim()
+  } : {};
+
+  checkoutStatus.textContent = "Procesando...";
+  checkoutStatus.className = "checkout-note";
+
+  try {
+    const response = await fetch("/api/orders/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nombre, contacto, ciudad, direccion, paymentMethod, invoiceRequested, invoiceTiming, invoice,
+        items: cartPayload()
+      })
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      checkoutStatus.textContent = data.coverage?.message || data.error || "No se pudo procesar el pedido.";
+      checkoutStatus.className = "checkout-note error";
+      return;
+    }
+
+    if (data.checkoutUrl) {
+      checkoutStatus.textContent = "Redirigiendo a pago en linea...";
+      checkoutStatus.className = "checkout-note ok";
+      window.open(data.checkoutUrl, "_blank", "noopener");
+      return;
+    }
+
+    checkoutStatus.textContent = data.message || "Pedido registrado. Tambien lo mandamos por WhatsApp para confirmar.";
+    checkoutStatus.className = "checkout-note ok";
+    if (data.whatsapp?.url) window.open(data.whatsapp.url, "_blank", "noopener");
+  } catch {
+    checkoutStatus.textContent = "No se pudo conectar con el servidor.";
+    checkoutStatus.className = "checkout-note error";
+  }
+});
+
 document.getElementById("chatForm").addEventListener("submit", async event => {
   event.preventDefault();
   const input = document.getElementById("chatInput");
@@ -1503,8 +1736,8 @@ document.getElementById("chatForm").addEventListener("submit", async event => {
   postMessage(text, "user");
   chatHistory.push({ role: "user", content: text });
   try {
-    const reply = await askChatbot(text);
-    postMessage(reply, "bot");
+    const { reply, action } = await askChatbot(text);
+    postMessage(reply, "bot", action);
     chatHistory.push({ role: "assistant", content: reply });
   } catch {
     const reply = localChatReply(text);
@@ -1513,7 +1746,7 @@ document.getElementById("chatForm").addEventListener("submit", async event => {
   }
 });
 
-postMessage("Soy el asesor EISENHAUS. Dime que vas a construir, medidas aproximadas y ciudad de entrega.");
+postMessage("Soy el asesor EISENHAUS. Para arrancar, ¿me pasas tu nombre y un telefono o correo de contacto?");
 renderFilters();
 renderProducts();
 renderCart();
