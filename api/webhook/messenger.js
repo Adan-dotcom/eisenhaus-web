@@ -88,27 +88,34 @@ module.exports = async function handler(req, res) {
   }
 
   const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
+  console.log("[messenger:incoming]", JSON.stringify(body));
 
   if (body.object !== "page") {
     return res.status(404).json({ error: "Not a page event" });
   }
 
-  res.status(200).send("EVENT_RECEIVED");
-
+  // Process fully before responding: Vercel can freeze the function right
+  // after the response is sent, killing any work still in flight.
   for (const entry of body.entry || []) {
     for (const event of entry.messaging || []) {
       const psid = event.sender?.id;
       const text = event.message?.text;
-      if (!psid || !text || event.message?.is_echo) continue;
+      if (!psid || !text || event.message?.is_echo) {
+        console.log("[messenger:skip]", JSON.stringify(event));
+        continue;
+      }
 
       try {
         pushHistory(psid, "user", text);
         const reply = await getAiReply(psid, text);
         pushHistory(psid, "assistant", reply);
+        console.log("[messenger:reply]", psid, reply);
         await sendMessengerReply(psid, reply);
       } catch (error) {
         console.error("[messenger:webhook]", error?.message || error);
       }
     }
   }
+
+  return res.status(200).send("EVENT_RECEIVED");
 };
