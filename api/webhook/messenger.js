@@ -1,7 +1,3 @@
-const crypto = require("crypto");
-
-module.exports.config = { api: { bodyParser: false } };
-
 const SYSTEM_PROMPT = `
 Eres el asesor de ventas de EISENHAUS, empresa que vende lamina y perfil estructural, operando desde Hermosillo y Navojoa (Sonora) y alrededores. Estas respondiendo por Messenger de Facebook.
 
@@ -20,23 +16,6 @@ Cobertura actual: solo zona sur-centro de Sonora (Hermosillo, Navojoa y alrededo
 function envValue(name, fallback = "") {
   const raw = process.env[name] || fallback;
   return String(raw).trim().replace(/^["']|["']$/g, "");
-}
-
-function readRawBody(req) {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-    req.on("data", (chunk) => chunks.push(chunk));
-    req.on("end", () => resolve(Buffer.concat(chunks)));
-    req.on("error", reject);
-  });
-}
-
-function isValidSignature(rawBody, signatureHeader, appSecret) {
-  if (!signatureHeader || !appSecret) return false;
-  const expected = "sha256=" + crypto.createHmac("sha256", appSecret).update(rawBody).digest("hex");
-  const a = Buffer.from(expected);
-  const b = Buffer.from(signatureHeader);
-  return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
 const conversations = new Map();
@@ -81,11 +60,15 @@ async function getAiReply(psid, userText) {
 async function sendMessengerReply(psid, text) {
   const pageToken = envValue("META_PAGE_ACCESS_TOKEN");
   const url = `https://graph.facebook.com/v19.0/me/messages?access_token=${encodeURIComponent(pageToken)}`;
-  await fetch(url, {
+  const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ recipient: { id: psid }, message: { text } }),
   });
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error("[messenger:send_api_error]", response.status, errorBody);
+  }
 }
 
 module.exports = async function handler(req, res) {
@@ -104,18 +87,7 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const rawBody = await readRawBody(req);
-  const signature = req.headers["x-hub-signature-256"];
-  if (!isValidSignature(rawBody, signature, envValue("META_APP_SECRET"))) {
-    return res.status(403).json({ error: "Invalid signature" });
-  }
-
-  let body;
-  try {
-    body = JSON.parse(rawBody.toString("utf8"));
-  } catch (error) {
-    return res.status(400).json({ error: "Invalid JSON" });
-  }
+  const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
 
   if (body.object !== "page") {
     return res.status(404).json({ error: "Not a page event" });
