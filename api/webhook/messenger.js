@@ -83,7 +83,10 @@ async function getHistory(psid) {
     });
     if (!res.ok) return conversations.get(psid) || [];
     const rows = await res.json();
-    return rows?.[0]?.messages || [];
+    const stored = rows?.[0]?.messages || [];
+    // Autorepara filas viejas que se hayan guardado con un tool_call colgado
+    // (bug ya corregido en setHistory, pero puede haber quedado guardado antes del fix).
+    return stored.filter((m) => m.role === "user" || (m.role === "assistant" && !m.tool_calls));
   } catch (error) {
     console.error("[messenger:history_read_error]", error?.message || error);
     return conversations.get(psid) || [];
@@ -92,7 +95,13 @@ async function getHistory(psid) {
 
 async function setHistory(psid, messages) {
   // Solo guarda los turnos de usuario/asistente, no el system prompt ni tool calls.
-  const trimmed = messages.filter((m) => m.role === "user" || m.role === "assistant").slice(-10);
+  // Ojo: un mensaje "assistant" con tool_calls no cuenta como turno limpio -
+  // si se guarda sin sus respuestas "tool" correspondientes (que el filtro de
+  // arriba ya descarta), la siguiente llamada a la API truena porque queda
+  // un tool_call colgado sin respuesta.
+  const trimmed = messages
+    .filter((m) => m.role === "user" || (m.role === "assistant" && !m.tool_calls))
+    .slice(-10);
   conversations.set(psid, trimmed);
 
   const cfg = supabaseConfig();
