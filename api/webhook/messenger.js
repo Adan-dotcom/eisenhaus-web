@@ -4,7 +4,7 @@ const FICHA_TECNICA = `
 Lamina galvanizada (metalica, CON precio en catalogo): ideal para naves industriales, bodegas, techos de gran claro, cercos. Muy resistente a golpes/granizo, no se agrieta. Ligera, aislamiento termico/acustico bajo (se calienta mas, mas ruido con lluvia salvo que se agregue aislante). Generalmente mas economica por m2. Estetica industrial, no imita teja.
 Zintro Alum (metalica, zinc-aluminio, SIN precio ni medidas confirmadas en catalogo todavia): en teoria mejor que galvanizada estandar en ambientes costeros/alta humedad, pero como no hay ficha confirmada, siempre que salga dile al cliente que se cotiza directo con el asesor, no le des precio ni midas piezas para este producto.
 Plastiteja (PVC, CON precio en catalogo): ideal para techos residenciales visibles, cocheras, fachada con acabado tipo teja. No se oxida ni corroe, buena tolerancia a intemperie, menor resistencia a impacto fuerte que lamina metalica calibre grueso. Mejor aislamiento termico/acustico (mas silenciosa con lluvia). Vida util larga, el color puede decolorarse con años de sol intenso. Mantenimiento minimo. Generalmente mas cara por m2 que galvanizada estandar.
-Regla: bodega/nave/presupuesto ajustado/area no visible -> galvanizada. Casa/cochera/fachada visible/quiere aspecto teja -> plastiteja. Prioriza silencio bajo lluvia o aislamiento -> plastiteja. Ambiente costero/alta humedad -> menciona Zintro Alum como opcion pero aclara que se cotiza directo, sin precio en catalogo. Acompaña siempre con "el calibre y la estructura final los valida el asesor".
+Regla: bodega/nave/presupuesto ajustado/area no visible -> galvanizada. Casa/cochera/fachada visible/quiere aspecto teja -> plastiteja. Prioriza silencio bajo lluvia o aislamiento -> plastiteja. Ambiente costero/alta humedad -> menciona Zintro Alum como opcion pero aclara que se cotiza directo, sin precio en catalogo. Acompaña siempre aclarando en lenguaje simple que el asesor confirma el calibre exacto contigo antes de cerrar el pedido (sin decir "valida la estructura" ni tecnicismos parecidos).
 `.trim();
 
 const SYSTEM_PROMPT = `
@@ -22,14 +22,23 @@ Precios y existencia SOLO salen del catalogo que se te da como contexto en cada 
 
 Responde breve, directo y en espanol mexicano. No saludes en cada mensaje. Si el cliente ya dio parte de la informacion, no la repitas ni la vuelvas a pedir. Haz maximo dos preguntas por respuesta.
 
+No hagas preguntas de relleno como "para que proyecto es" o "cuentame mas de tu proyecto" - no ayudan a cotizar y fastidian al cliente. Ve directo a lo que si necesitas para avanzar: producto, medida o cantidad, y ciudad.
+
+Si preguntan en general que vendes, que manejas, o piden precios sin especificar un producto, comparte de una vez la lista completa de precios de TODAS las categorias del catalogo (lamina galvanizada, plastiteja, polin C, PTR, pija), no nada mas una parte.
+
 Si el cliente no sabe que material elegir entre metalica y plastica, usa esta ficha para comparar y recomendar (maximo 3 opciones, pros/contras practicos):
 ${FICHA_TECNICA}
 
 Cuando el cliente de medidas del techo (area total, o ancho a cubrir + largo de pendiente), usa las tools de calculo de piezas, no calcules tu a mano ni "a ojo".
 Si preguntan por diseno estructural (separacion de polines, claros, cargas), no lo definas tu: aclara que eso lo valida el asesor por seguridad, y solo ayuda a convertir metros lineales ya definidos a piezas.
+
+Espiritu de venta: en cuanto el cliente decida un producto principal, sugiere en la misma respuesta (breve, no insistente) el complemento logico que le falta - lamina o plastiteja -> pija punta de broca para fijarla; plastiteja -> caballete para la cumbrera si no lo ha pedido; techo sin mencionar estructura -> polin C o PTR. Ofrecelo una vez; si el cliente dice que no o lo ignora, no insistas de nuevo con lo mismo.
+
+Tienes la tool send_product_photo (manda una foto real del producto por Messenger): usala cuando el cliente no sepa que es un producto (ej. no conoce el caballete), este decidiendo entre opciones (galvanizada vs plastiteja), o pregunte especificamente por un producto sin que ya le hayas mandado foto de ese producto en esta conversacion. La foto se manda aparte automaticamente en cuanto llamas la tool: no describas la imagen ni pongas un link en tu texto.
+
 Cuando ya tengas producto, cantidad/medidas, ciudad con cobertura confirmada y datos de contacto, llama build_whatsapp_handoff con un resumen claro, comparte el link que regresa, y dile al cliente que ya quedo listo para mandarlo al asesor.
 Cobertura actual: solo zona sur-centro de Sonora (Hermosillo, Navojoa y alrededores), nacional aun no disponible.
-Productos principales: lamina galvanizada, Zintro Alum, plastiteja roja, polin C, PTR R300/R200 y perfiles rectangulares.
+Productos principales: lamina galvanizada, Zintro Alum, plastiteja roja, polin C, PTR R300/R200, perfiles rectangulares y pija punta de broca.
 `.trim();
 
 // Snapshot del catalogo de index.html - mismos precios que el sitio (zona Navojoa).
@@ -55,6 +64,31 @@ const CATALOG_CONTEXT = [
   { id: "perfiles-rectangulares", name: "Perfiles rectangulares", category: "Perfil", availability: "Cotizar" },
   { id: "pija-punta-broca", name: "Pija punta de broca", category: "Ferreteria", price: 180, unit: "ciento" },
 ];
+
+// Sin foto confirmada todavia para zintro-alum ni perfiles-rectangulares.
+const PRODUCT_PHOTOS = {
+  galvanizada: "https://www.eisenhaus.lat/assets/productos/galvanizada.jpeg",
+  plastiteja: "https://www.eisenhaus.lat/assets/productos/plastiteja.jpeg",
+  "polin-c": "https://www.eisenhaus.lat/assets/productos/polin-c.jpeg",
+  ptr: "https://www.eisenhaus.lat/assets/productos/ptr.jpeg",
+  pija: "https://www.eisenhaus.lat/assets/productos/pija.jpeg",
+};
+
+const SEND_PRODUCT_PHOTO_TOOL = {
+  type: "function",
+  function: {
+    name: "send_product_photo",
+    description:
+      "Manda una foto real del producto al cliente por Messenger. Usala cuando el cliente no sepa que es un producto, este decidiendo entre opciones (puedes llamarla varias veces, una por producto), o pregunte especificamente por un producto y todavia no le hayas mandado foto de ese producto en esta conversacion.",
+    parameters: {
+      type: "object",
+      properties: {
+        producto: { type: "string", enum: Object.keys(PRODUCT_PHOTOS) },
+      },
+      required: ["producto"],
+    },
+  },
+};
 
 function envValue(name, fallback = "") {
   const raw = process.env[name] || fallback;
@@ -151,7 +185,7 @@ async function getAiReply(psid, userText) {
         thinking: { type: "disabled" },
         temperature: 0.3,
         max_tokens: 700,
-        tools: TOOL_DEFINITIONS,
+        tools: [...TOOL_DEFINITIONS, SEND_PRODUCT_PHOTO_TOOL],
         tool_choice: "auto",
         messages,
       }),
@@ -175,7 +209,19 @@ async function getAiReply(psid, userText) {
         } catch (error) {
           // args invalidos del modelo, se corre la tool con {} y que ella responda el error
         }
-        const result = await runTool(call.function?.name, args);
+
+        let result;
+        if (call.function?.name === "send_product_photo") {
+          const photoUrl = PRODUCT_PHOTOS[args.producto];
+          if (photoUrl) {
+            await sendMessengerImage(psid, photoUrl);
+            result = { sent: true };
+          } else {
+            result = { sent: false, reason: "Sin foto disponible para ese producto todavia." };
+          }
+        } else {
+          result = await runTool(call.function?.name, args);
+        }
         messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(result) });
       }
       continue;
@@ -200,6 +246,23 @@ async function sendMessengerReply(psid, text) {
   if (!response.ok) {
     const errorBody = await response.text();
     console.error("[messenger:send_api_error]", response.status, errorBody);
+  }
+}
+
+async function sendMessengerImage(psid, imageUrl) {
+  const pageToken = envValue("META_PAGE_ACCESS_TOKEN");
+  const url = `https://graph.facebook.com/v19.0/me/messages?access_token=${encodeURIComponent(pageToken)}`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      recipient: { id: psid },
+      message: { attachment: { type: "image", payload: { url: imageUrl, is_reusable: true } } },
+    }),
+  });
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error("[messenger:send_photo_error]", response.status, errorBody);
   }
 }
 
