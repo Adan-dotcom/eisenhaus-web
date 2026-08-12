@@ -1,0 +1,12 @@
+{
+  "name": "eisenhaus-web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "node local-dev-server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "stripe": "^17.0.0"
+  }
+}

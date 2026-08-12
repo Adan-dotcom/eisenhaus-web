@@ -1,29 +1,34 @@
-const SYSTEM_PROMPT = `
-Eres el asesor de ventas de EISENHAUS, una empresa que vende laminas y perfil estructural.
-Tu trabajo es ayudar a precotizar, no inventar precios ni existencias.
-No inventes calibres, grosores, largos, composicion del material, precios, existencias, tiempos de entrega ni garantias.
-Si un dato no esta en el catalogo, di "eso lo confirma el asesor" y sigue reuniendo datos utiles.
-Pide los datos que hacen falta: producto, medidas, cantidad, ciudad de entrega y uso del material.
-Responde breve, directo y en espanol mexicano. No saludes en cada mensaje.
-Si el cliente ya dio parte de la informacion, no la vuelvas a pedir.
-Haz maximo dos preguntas por respuesta.
-Si el cliente no sabe que material elegir, compara maximo 3 opciones con pros/contras practicos y recomienda una segun el uso.
-Cuando el cliente de medidas de area, calcula el area aproximada en m2 y usala para orientar piezas, pero aclara que se confirma con traslapes, pendiente y desperdicio.
-Cuando tengas producto, cantidad/medidas y ciudad, resume la solicitud y dile que la enviara a un asesor por WhatsApp para precio y disponibilidad.
-Si te preguntan por precio, explica que depende de calibre, largo, ciudad y existencia; no inventes montos.
-Productos principales: lamina galvanizada, Zintro Alum, plastiteja roja, polin C 3 pulgadas, PTR R300/R200 y perfiles rectangulares.
+const { TOOL_DEFINITIONS, runTool } = require("./lib/tools");
+
+const FICHA_TECNICA = `
+Lamina galvanizada (metalica, CON precio en catalogo): ideal para naves industriales, bodegas, techos de gran claro, cercos. Muy resistente a golpes/granizo, no se agrieta. Ligera, aislamiento termico/acustico bajo (se calienta mas, mas ruido con lluvia salvo que se agregue aislante). Generalmente mas economica por m2. Estetica industrial, no imita teja.
+Zintro Alum (metalica, zinc-aluminio, SIN precio ni medidas confirmadas en catalogo todavia): en teoria mejor que galvanizada estandar en ambientes costeros/alta humedad, pero como no hay ficha confirmada, siempre que salga dile al cliente que se cotiza directo con el asesor, no le des precio ni midas piezas para este producto.
+Plastiteja (PVC, CON precio en catalogo): ideal para techos residenciales visibles, cocheras, fachada con acabado tipo teja. No se oxida ni corroe, buena tolerancia a intemperie, menor resistencia a impacto fuerte que lamina metalica calibre grueso. Mejor aislamiento termico/acustico (mas silenciosa con lluvia). Vida util larga, el color puede decolorarse con años de sol intenso. Mantenimiento minimo. Generalmente mas cara por m2 que galvanizada estandar.
+Regla: bodega/nave/presupuesto ajustado/area no visible -> galvanizada. Casa/cochera/fachada visible/quiere aspecto teja -> plastiteja. Prioriza silencio bajo lluvia o aislamiento -> plastiteja. Ambiente costero/alta humedad -> menciona Zintro Alum como opcion pero aclara que se cotiza directo, sin precio en catalogo. Acompaña siempre con "el calibre y la estructura final los valida el asesor".
 `.trim();
 
-const CATALOG_NOTES = `
-Catalogo confirmado:
-- Lamina galvanizada: para techo y cerramiento, ancho aproximado 1.00 m, largos segun existencia.
-- Galvanizada varias medidas: acanalada, ancho aproximado 1.00 m, entrega segun ciudad.
-- Zintro Alum: lamina acanalada para techo industrial, varias medidas segun existencia.
-- Plastiteja roja: cubierta decorativa tipo teja; medidas conocidas de 1.00 x 2.60 m a 1.00 x 7.28 m. No afirmar composicion especifica.
-- Polin C 3 pulgadas: perfil C, tramo comercial de 6 m.
-- PTR R300/R200: perfil tubular rectangular, 3 pulgadas, tramo comercial de 6 m.
-- Perfiles rectangulares: pintado o zintro, varias medidas, tramo comercial de 6 m.
-No hay precios publicados en el sitio.
+const SYSTEM_PROMPT = `
+Eres el asesor de ventas de EISENHAUS, empresa que vende lamina y perfil estructural. Cobertura de entrega: sur de Sonora, con Hermosillo como limite superior (usa siempre check_delivery_coverage para confirmar una ciudad especifica, nunca asumas).
+
+REGLA 1, SIEMPRE PRIMERO: si en el historial no hay ya un nombre y un contacto (telefono o correo) del cliente, tu UNICA tarea es pedirlos de forma breve y amable. No cotices, no calcules, no des cobertura ni compares productos hasta tenerlos. En cuanto el cliente los de, llama la tool save_lead con nombre y contacto, y despues sigue la conversacion normal.
+
+No inventes calibres, grosores, largos, composicion del material, precios, existencias, tiempos de entrega ni cobertura de zonas. Para eso usa las tools, nunca calcules ni asumas a mano:
+- check_delivery_coverage: si se entrega en una ciudad, en cuanto tiempo y con que costo.
+- calc_lamina_pieces / calc_lamina_pieces_from_area: piezas de lamina o plastiteja necesarias.
+- calc_barras_estructurales: piezas de PTR/polin C/perfil a partir de metros lineales ya definidos.
+- build_whatsapp_handoff: arma el link final para mandar la cotizacion al asesor. Nunca compongas tu mismo un link de wa.me en el texto, ni repitas la URL en tu respuesta: el boton ya se muestra aparte automaticamente cuando llamas esta tool, tu solo confirma en texto que ya quedo listo.
+
+Precios y existencia SOLO salen del catalogo que se te da como contexto en cada mensaje, nunca de memoria ni de lo que dijiste en turnos anteriores si ya no aplica. Solo cotizas precio y calculas piezas para productos que traen "price" en ese catalogo (lamina galvanizada, plastiteja, polin C, PTR Ternium 3x1.5, pija punta de broca). Zintro Alum y perfiles rectangulares NO tienen precio confirmado todavia (apareceran sin "price" o como "Cotizar"): para esos nunca inventes un precio ni asumas que miden igual que otro producto — di claro que se cotiza directo con el asesor. calc_barras_estructurales lo puedes usar para PTR/polin/perfiles cuando el cliente ya sabe los metros lineales que necesita (todos vienen en tramo comercial de 6m), eso no requiere precio.
+
+Responde breve, directo y en espanol mexicano. No saludes en cada mensaje. Si el cliente ya dio parte de la informacion (incluido lo que ya tiene en su carrito), no la repitas ni la vuelvas a pedir. Haz maximo dos preguntas por respuesta.
+
+Si el cliente no sabe que material elegir entre metalica y plastica, usa esta ficha para comparar y recomendar (maximo 3 opciones, pros/contras practicos):
+${FICHA_TECNICA}
+
+Cuando el cliente de medidas del techo (area total, o ancho a cubrir + largo de pendiente), usa las tools de calculo de piezas, no calcules tu a mano ni "a ojo".
+Si preguntan por diseno estructural (separacion de polines, claros, cargas), no lo definas tu: aclara que eso lo valida el asesor por seguridad, y solo ayuda a convertir metros lineales ya definidos a piezas.
+Cuando ya tengas producto, cantidad/medidas, ciudad con cobertura confirmada y datos de contacto, llama build_whatsapp_handoff con un resumen claro y dile al cliente que ya quedo listo para mandarlo al asesor.
+Productos principales: lamina galvanizada, Zintro Alum, plastiteja roja, polin C, PTR R300/R200 y perfiles rectangulares.
 `.trim();
 
 const isProduction = process.env.VERCEL_ENV === "production";
@@ -37,6 +42,22 @@ function devLog(label, value) {
 function envValue(name, fallback = "") {
   const raw = process.env[name] || fallback;
   return String(raw).trim().replace(/^["']|["']$/g, "");
+}
+
+// El modelo a veces repite el link de wa.me en el texto aunque ya se manda
+// aparte como `action` (boton real en el frontend). Se limpia aqui para no
+// depender de que el prompt se obedezca al 100%.
+function stripWhatsappLinks(text) {
+  if (!text) return text;
+  return text
+    .replace(/\[([^\]]*)\]\(https:\/\/wa\.me\/[^)]*\)/gi, "")
+    .replace(/https:\/\/wa\.me\/\S*/gi, "")
+    .replace(/\*\*\s*\*\*/g, "")
+    .split("\n")
+    .map((line) => line.trim())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 module.exports = async function handler(req, res) {
@@ -58,6 +79,7 @@ module.exports = async function handler(req, res) {
 
   const message = String(req.body?.message || "").trim().slice(0, 1200);
   const products = Array.isArray(req.body?.products) ? req.body.products.slice(0, 20) : [];
+  const cart = Array.isArray(req.body?.cart) ? req.body.cart.slice(0, 20) : [];
   const history = Array.isArray(req.body?.history) ? req.body.history.slice(-8) : [];
   const safeHistory = history
     .map((item) => ({
@@ -70,62 +92,100 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: "Missing message" });
   }
 
-  devLog("request", {
-    message,
-    historyMessages: safeHistory.length,
-    model,
-    baseUrl,
-  });
-
-  const catalogContext = products.map(({ name, category, availability, specs }) => ({
+  const catalogContext = products.map(({ id, name, category, availability, price, unit, specs }) => ({
+    id,
     name,
     category,
     availability,
+    price,
+    unit,
     specs,
   }));
 
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${apiKey}`,
+  };
+
+  const messages = [
+    { role: "system", content: SYSTEM_PROMPT },
+    { role: "system", content: `Catalogo actual, unica fuente de verdad (incluye precio): ${JSON.stringify(catalogContext)}` },
+    ...(cart.length ? [{ role: "system", content: `Carrito actual del cliente en la pagina: ${JSON.stringify(cart)}` }] : []),
+    ...safeHistory,
+    { role: "user", content: message },
+  ];
+
+  devLog("request", { message, historyMessages: safeHistory.length, cartItems: cart.length, model, baseUrl });
+
+  const MAX_ROUNDS = 4;
+  let action = null;
+
   try {
-    const upstream = await fetch(chatUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model,
-        thinking: { type: "disabled" },
-        temperature: 0.3,
-        max_tokens: 520,
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "system", content: CATALOG_NOTES },
-          { role: "system", content: `Catalogo visible en pagina: ${JSON.stringify(catalogContext)}` },
-          ...safeHistory,
-          { role: "user", content: message },
-        ],
-      }),
-    });
+    for (let round = 0; round < MAX_ROUNDS; round++) {
+      const upstream = await fetch(chatUrl, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          model,
+          thinking: { type: "disabled" },
+          temperature: 0.3,
+          max_tokens: 700,
+          tools: TOOL_DEFINITIONS,
+          tool_choice: "auto",
+          messages,
+        }),
+      });
 
-    const data = await upstream.json();
+      const data = await upstream.json();
 
-    if (!upstream.ok) {
-      devLog("provider_error", data?.error || data);
-      return res.status(upstream.status).json({
-        error: data?.error?.message || "AI provider error",
+      if (!upstream.ok) {
+        devLog("provider_error", data?.error || data);
+        return res.status(upstream.status).json({ error: data?.error?.message || "AI provider error" });
+      }
+
+      const choice = data?.choices?.[0];
+      const msg = choice?.message;
+      devLog("round", { round, finish_reason: choice?.finish_reason, hasToolCalls: !!msg?.tool_calls?.length });
+
+      if (!msg) break;
+
+      if (Array.isArray(msg.tool_calls) && msg.tool_calls.length) {
+        messages.push({ role: "assistant", content: msg.content || null, tool_calls: msg.tool_calls });
+
+        for (const call of msg.tool_calls) {
+          let args = {};
+          try {
+            args = JSON.parse(call.function?.arguments || "{}");
+          } catch (error) {
+            devLog("tool_args_parse_error", { name: call.function?.name, raw: call.function?.arguments });
+          }
+
+          const result = await runTool(call.function?.name, args);
+          devLog("tool_result", { name: call.function?.name, args, result });
+
+          if (call.function?.name === "build_whatsapp_handoff" && result?.url) {
+            action = { type: "whatsapp", url: result.url, label: result.label || "Enviar por WhatsApp" };
+          }
+
+          messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(result) });
+        }
+
+        continue;
+      }
+
+      const reply = action ? stripWhatsappLinks(msg.content?.trim()) : msg.content?.trim();
+      devLog("finish", { usage: data?.usage, emptyReply: !reply });
+
+      return res.status(200).json({
+        reply: reply || "Pasame producto, medidas, cantidad y ciudad para armar la cotizacion.",
+        action,
       });
     }
 
-    const choice = data?.choices?.[0];
-    const reply = choice?.message?.content?.trim();
-    devLog("finish", {
-      finish_reason: choice?.finish_reason,
-      usage: data?.usage,
-      emptyReply: !reply,
-    });
-    if (!reply) devLog("empty_choice", choice);
-    devLog("reply", reply);
+    devLog("max_rounds_exhausted", {});
     return res.status(200).json({
-      reply: reply || "Pasame producto, medidas, cantidad y ciudad para armar la cotizacion.",
+      reply: "Se me complico armar la respuesta con tantos datos, ¿me repites lo ultimo que necesitas?",
+      action,
     });
   } catch (error) {
     devLog("exception", error?.message || error);
