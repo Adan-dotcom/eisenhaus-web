@@ -1,17 +1,60 @@
-const SYSTEM_PROMPT = `
-Eres el asesor de ventas de EISENHAUS, empresa que vende lamina y perfil estructural, operando desde Hermosillo y Navojoa (Sonora) y alrededores. Estas respondiendo por Messenger de Facebook.
+const { TOOL_DEFINITIONS, runTool } = require("../lib/tools");
 
-No inventes calibres, grosores, largos, composicion del material, precios, existencias, tiempos de entrega ni cobertura de zonas. Los precios que puedes usar (validos solo para zona Navojoa, en Hermosillo pueden variar y se confirma por WhatsApp) son:
-- Lamina galvanizada: 6.10m $800, 5.50m $785, 4.88m $660, 4.27m $580, 3.66m $510, 3.05m $425, 2.44m $360 (precio por pieza, ancho ~0.82m)
-- Plastiteja roja: 6.0m $1430, 5.0m $1200, 4.0m $970, 3.0m $740, 2.0m $510 (precio por pieza), caballete $600
-- Polin C: tipo 3 $620, tipo 4 $720 (tramo de 6m)
-- Pija punta de broca: $180 el ciento
-- Zintro Alum, PTR y perfiles rectangulares: no tienen precio confirmado todavia, dile al cliente que se cotiza directo con el asesor.
-
-Responde breve, directo y en espanol mexicano. No saludes en cada mensaje. Haz maximo dos preguntas por respuesta.
-En cuanto el cliente diga que material, medida/cantidad y ciudad, o si prefiere hablar con alguien, dile que le pasas al asesor y comparte este link: https://wa.me/14158735968
-Cobertura actual: solo zona sur-centro de Sonora (Hermosillo, Navojoa y alrededores), nacional aun no disponible.
+const FICHA_TECNICA = `
+Lamina galvanizada (metalica, CON precio en catalogo): ideal para naves industriales, bodegas, techos de gran claro, cercos. Muy resistente a golpes/granizo, no se agrieta. Ligera, aislamiento termico/acustico bajo (se calienta mas, mas ruido con lluvia salvo que se agregue aislante). Generalmente mas economica por m2. Estetica industrial, no imita teja.
+Zintro Alum (metalica, zinc-aluminio, SIN precio ni medidas confirmadas en catalogo todavia): en teoria mejor que galvanizada estandar en ambientes costeros/alta humedad, pero como no hay ficha confirmada, siempre que salga dile al cliente que se cotiza directo con el asesor, no le des precio ni midas piezas para este producto.
+Plastiteja (PVC, CON precio en catalogo): ideal para techos residenciales visibles, cocheras, fachada con acabado tipo teja. No se oxida ni corroe, buena tolerancia a intemperie, menor resistencia a impacto fuerte que lamina metalica calibre grueso. Mejor aislamiento termico/acustico (mas silenciosa con lluvia). Vida util larga, el color puede decolorarse con años de sol intenso. Mantenimiento minimo. Generalmente mas cara por m2 que galvanizada estandar.
+Regla: bodega/nave/presupuesto ajustado/area no visible -> galvanizada. Casa/cochera/fachada visible/quiere aspecto teja -> plastiteja. Prioriza silencio bajo lluvia o aislamiento -> plastiteja. Ambiente costero/alta humedad -> menciona Zintro Alum como opcion pero aclara que se cotiza directo, sin precio en catalogo. Acompaña siempre con "el calibre y la estructura final los valida el asesor".
 `.trim();
+
+const SYSTEM_PROMPT = `
+Eres el asesor de ventas de EISENHAUS, empresa que vende lamina y perfil estructural, operando desde Hermosillo y Navojoa (Sonora) y alrededores. Estas respondiendo por Messenger de Facebook, en texto plano (no hay botones ni tarjetas), asi que cuando tengas que compartir un link ponlo tal cual en el texto.
+
+REGLA 1, SIEMPRE PRIMERO: si en el historial no hay ya un nombre y un contacto (telefono o correo) del cliente, tu UNICA tarea es pedirlos de forma breve y amable. No cotices, no calcules, no des cobertura ni compares productos hasta tenerlos. En cuanto el cliente los de, llama la tool save_lead con nombre y contacto, y despues sigue la conversacion normal.
+
+No inventes calibres, grosores, largos, composicion del material, precios, existencias, tiempos de entrega ni cobertura de zonas. Para eso usa las tools, nunca calcules ni asumas a mano:
+- check_delivery_coverage: si se entrega en una ciudad, en cuanto tiempo y con que costo.
+- calc_lamina_pieces / calc_lamina_pieces_from_area: piezas de lamina o plastiteja necesarias.
+- calc_barras_estructurales: piezas de PTR/polin C/perfil a partir de metros lineales ya definidos.
+- build_whatsapp_handoff: arma el link final para mandar la cotizacion al asesor. Llama esta tool y comparte el link (url) que te regresa tal cual en tu respuesta de texto, ya que aqui en Messenger no hay boton aparte.
+
+Precios y existencia SOLO salen del catalogo que se te da como contexto en cada mensaje, nunca de memoria ni de lo que dijiste en turnos anteriores si ya no aplica. Solo cotizas precio y calculas piezas para productos que traen "price" en ese catalogo. Los que no traen "price" (apareceran sin ese campo): para esos nunca inventes un precio ni asumas que miden igual que otro producto — di claro que se cotiza directo con el asesor. calc_barras_estructurales lo puedes usar para PTR/polin/perfiles cuando el cliente ya sabe los metros lineales que necesita (todos vienen en tramo comercial de 6m), eso no requiere precio.
+
+Responde breve, directo y en espanol mexicano. No saludes en cada mensaje. Si el cliente ya dio parte de la informacion, no la repitas ni la vuelvas a pedir. Haz maximo dos preguntas por respuesta.
+
+Si el cliente no sabe que material elegir entre metalica y plastica, usa esta ficha para comparar y recomendar (maximo 3 opciones, pros/contras practicos):
+${FICHA_TECNICA}
+
+Cuando el cliente de medidas del techo (area total, o ancho a cubrir + largo de pendiente), usa las tools de calculo de piezas, no calcules tu a mano ni "a ojo".
+Si preguntan por diseno estructural (separacion de polines, claros, cargas), no lo definas tu: aclara que eso lo valida el asesor por seguridad, y solo ayuda a convertir metros lineales ya definidos a piezas.
+Cuando ya tengas producto, cantidad/medidas, ciudad con cobertura confirmada y datos de contacto, llama build_whatsapp_handoff con un resumen claro, comparte el link que regresa, y dile al cliente que ya quedo listo para mandarlo al asesor.
+Cobertura actual: solo zona sur-centro de Sonora (Hermosillo, Navojoa y alrededores), nacional aun no disponible.
+Productos principales: lamina galvanizada, Zintro Alum, plastiteja roja, polin C, PTR R300/R200 y perfiles rectangulares.
+`.trim();
+
+// Snapshot del catalogo de index.html - mismos precios que el sitio (zona Navojoa).
+// Si cambian precios ahi, actualizar aqui tambien (no se leen del mismo array todavia).
+const CATALOG_CONTEXT = [
+  { id: "galvanizada-610", name: "Lamina galvanizada 6.10 x 0.82 m", category: "Lamina", price: 800, unit: "pieza" },
+  { id: "galvanizada-550", name: "Lamina galvanizada 5.50 x 0.82 m", category: "Lamina", price: 785, unit: "pieza" },
+  { id: "galvanizada-488", name: "Lamina galvanizada 4.88 x 0.82 m", category: "Lamina", price: 660, unit: "pieza" },
+  { id: "galvanizada-427", name: "Lamina galvanizada 4.27 x 0.82 m", category: "Lamina", price: 580, unit: "pieza" },
+  { id: "galvanizada-366", name: "Lamina galvanizada 3.66 x 0.82 m", category: "Lamina", price: 510, unit: "pieza" },
+  { id: "galvanizada-305", name: "Lamina galvanizada 3.05 x 0.82 m", category: "Lamina", price: 425, unit: "pieza" },
+  { id: "galvanizada-244", name: "Lamina galvanizada 2.44 x 0.82 m", category: "Lamina", price: 360, unit: "pieza" },
+  { id: "zintro-alum", name: "Zintro Alum", category: "Lamina", availability: "Cotizar" },
+  { id: "plastiteja-600", name: "Plastiteja roja 6.0 x 1.05 m", category: "Teja", price: 1430, unit: "pieza" },
+  { id: "plastiteja-500", name: "Plastiteja roja 5.0 x 1.05 m", category: "Teja", price: 1200, unit: "pieza" },
+  { id: "plastiteja-400", name: "Plastiteja roja 4.0 x 1.05 m", category: "Teja", price: 970, unit: "pieza" },
+  { id: "plastiteja-300", name: "Plastiteja roja 3.0 x 1.05 m", category: "Teja", price: 740, unit: "pieza" },
+  { id: "plastiteja-200", name: "Plastiteja roja 2.0 x 1.05 m", category: "Teja", price: 510, unit: "pieza" },
+  { id: "caballete-plastiteja", name: "Caballete de plastiteja", category: "Teja", price: 600, unit: "pieza" },
+  { id: "polin-c-3", name: "Polin C tipo 3", category: "Perfil", price: 620, unit: "pieza" },
+  { id: "polin-c-4", name: "Polin C tipo 4", category: "Perfil", price: 720, unit: "pieza" },
+  { id: "ptr-ternium-3x1.5", name: "PTR Ternium 3 x 1.5 pulgadas", category: "Perfil", price: 500, unit: "pieza" },
+  { id: "perfiles-rectangulares", name: "Perfiles rectangulares", category: "Perfil", availability: "Cotizar" },
+  { id: "pija-punta-broca", name: "Pija punta de broca", category: "Ferreteria", price: 180, unit: "ciento" },
+];
 
 function envValue(name, fallback = "") {
   const raw = process.env[name] || fallback;
@@ -24,10 +67,10 @@ function getHistory(psid) {
   return conversations.get(psid) || [];
 }
 
-function pushHistory(psid, role, content) {
-  const history = getHistory(psid);
-  history.push({ role, content });
-  conversations.set(psid, history.slice(-10));
+function setHistory(psid, messages) {
+  // Solo guarda los turnos de usuario/asistente, no el system prompt ni tool calls.
+  const trimmed = messages.filter((m) => m.role === "user" || m.role === "assistant").slice(-10);
+  conversations.set(psid, trimmed);
 }
 
 async function getAiReply(psid, userText) {
@@ -38,23 +81,61 @@ async function getAiReply(psid, userText) {
     ? baseUrl.replace(/\/$/, "")
     : `${baseUrl.replace(/\/$/, "")}/chat/completions`;
 
+  const headers = { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` };
+
   const messages = [
     { role: "system", content: SYSTEM_PROMPT },
+    { role: "system", content: `Catalogo actual, unica fuente de verdad (incluye precio): ${JSON.stringify(CATALOG_CONTEXT)}` },
     ...getHistory(psid),
     { role: "user", content: userText },
   ];
 
-  const upstream = await fetch(chatUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({ model, temperature: 0.3, max_tokens: 400, messages }),
-  });
+  const MAX_ROUNDS = 4;
 
-  const data = await upstream.json();
-  if (!upstream.ok) {
-    throw new Error(data?.error?.message || "AI provider error");
+  for (let round = 0; round < MAX_ROUNDS; round++) {
+    const upstream = await fetch(chatUrl, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        model,
+        temperature: 0.3,
+        max_tokens: 500,
+        tools: TOOL_DEFINITIONS,
+        tool_choice: "auto",
+        messages,
+      }),
+    });
+
+    const data = await upstream.json();
+    if (!upstream.ok) {
+      throw new Error(data?.error?.message || "AI provider error");
+    }
+
+    const msg = data?.choices?.[0]?.message;
+    if (!msg) break;
+
+    if (Array.isArray(msg.tool_calls) && msg.tool_calls.length) {
+      messages.push({ role: "assistant", content: msg.content || null, tool_calls: msg.tool_calls });
+
+      for (const call of msg.tool_calls) {
+        let args = {};
+        try {
+          args = JSON.parse(call.function?.arguments || "{}");
+        } catch (error) {
+          // args invalidos del modelo, se corre la tool con {} y que ella responda el error
+        }
+        const result = await runTool(call.function?.name, args);
+        messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(result) });
+      }
+      continue;
+    }
+
+    const reply = msg.content?.trim() || "Pasame producto, medida/cantidad y ciudad para ayudarte a cotizar.";
+    setHistory(psid, [...messages, { role: "assistant", content: reply }]);
+    return reply;
   }
-  return data?.choices?.[0]?.message?.content?.trim() || "Pasame producto, medida/cantidad y ciudad para ayudarte a cotizar.";
+
+  return "Se me complico armar la respuesta con tantos datos, ¿me repites lo ultimo que necesitas?";
 }
 
 async function sendMessengerReply(psid, text) {
@@ -88,7 +169,6 @@ module.exports = async function handler(req, res) {
   }
 
   const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
-  console.log("[messenger:incoming]", JSON.stringify(body));
 
   if (body.object !== "page") {
     return res.status(404).json({ error: "Not a page event" });
@@ -100,16 +180,10 @@ module.exports = async function handler(req, res) {
     for (const event of entry.messaging || []) {
       const psid = event.sender?.id;
       const text = event.message?.text;
-      if (!psid || !text || event.message?.is_echo) {
-        console.log("[messenger:skip]", JSON.stringify(event));
-        continue;
-      }
+      if (!psid || !text || event.message?.is_echo) continue;
 
       try {
-        pushHistory(psid, "user", text);
         const reply = await getAiReply(psid, text);
-        pushHistory(psid, "assistant", reply);
-        console.log("[messenger:reply]", psid, reply);
         await sendMessengerReply(psid, reply);
       } catch (error) {
         console.error("[messenger:webhook]", error?.message || error);
