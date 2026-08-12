@@ -61,16 +61,57 @@ function envValue(name, fallback = "") {
   return String(raw).trim().replace(/^["']|["']$/g, "");
 }
 
+// Fallback en memoria: solo sobrevive mientras la instancia de Vercel siga
+// caliente. Entre mensajes separados por minutos casi siempre se pierde, por
+// eso Supabase (abajo) es la fuente real cuando esta configurado.
 const conversations = new Map();
 
-function getHistory(psid) {
-  return conversations.get(psid) || [];
+function supabaseConfig() {
+  const url = envValue("SUPABASE_URL");
+  const key = envValue("SUPABASE_SERVICE_KEY");
+  if (!url || !key) return null;
+  return { url: url.replace(/\/$/, ""), key };
 }
 
-function setHistory(psid, messages) {
+async function getHistory(psid) {
+  const cfg = supabaseConfig();
+  if (!cfg) return conversations.get(psid) || [];
+
+  try {
+    const res = await fetch(`${cfg.url}/rest/v1/bot_conversations?psid=eq.${encodeURIComponent(psid)}&select=messages`, {
+      headers: { apikey: cfg.key, Authorization: `Bearer ${cfg.key}` },
+    });
+    if (!res.ok) return conversations.get(psid) || [];
+    const rows = await res.json();
+    return rows?.[0]?.messages || [];
+  } catch (error) {
+    console.error("[messenger:history_read_error]", error?.message || error);
+    return conversations.get(psid) || [];
+  }
+}
+
+async function setHistory(psid, messages) {
   // Solo guarda los turnos de usuario/asistente, no el system prompt ni tool calls.
   const trimmed = messages.filter((m) => m.role === "user" || m.role === "assistant").slice(-10);
   conversations.set(psid, trimmed);
+
+  const cfg = supabaseConfig();
+  if (!cfg) return;
+
+  try {
+    await fetch(`${cfg.url}/rest/v1/bot_conversations`, {
+      method: "POST",
+      headers: {
+        apikey: cfg.key,
+        Authorization: `Bearer ${cfg.key}`,
+        "Content-Type": "application/json",
+        Prefer: "resolution=merge-duplicates",
+      },
+      body: JSON.stringify([{ psid, platform: "messenger", messages: trimmed, updated_at: new Date().toISOString() }]),
+    });
+  } catch (error) {
+    console.error("[messenger:history_write_error]", error?.message || error);
+  }
 }
 
 async function getAiReply(psid, userText) {
@@ -86,7 +127,7 @@ async function getAiReply(psid, userText) {
   const messages = [
     { role: "system", content: SYSTEM_PROMPT },
     { role: "system", content: `Catalogo actual, unica fuente de verdad (incluye precio): ${JSON.stringify(CATALOG_CONTEXT)}` },
-    ...getHistory(psid),
+    ...(await getHistory(psid)),
     { role: "user", content: userText },
   ];
 
@@ -98,8 +139,9 @@ async function getAiReply(psid, userText) {
       headers,
       body: JSON.stringify({
         model,
+        thinking: { type: "disabled" },
         temperature: 0.3,
-        max_tokens: 500,
+        max_tokens: 700,
         tools: TOOL_DEFINITIONS,
         tool_choice: "auto",
         messages,
@@ -131,7 +173,7 @@ async function getAiReply(psid, userText) {
     }
 
     const reply = msg.content?.trim() || "Pasame producto, medida/cantidad y ciudad para ayudarte a cotizar.";
-    setHistory(psid, [...messages, { role: "assistant", content: reply }]);
+    await setHistory(psid, [...messages, { role: "assistant", content: reply }]);
     return reply;
   }
 
