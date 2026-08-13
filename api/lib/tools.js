@@ -69,11 +69,11 @@ const TOOL_DEFINITIONS = [
     function: {
       name: "calc_lamina_pieces",
       description:
-        "Calcula cuantas piezas de lamina/plastiteja se necesitan dando ancho a cubrir y largo de la pendiente del techo, ya con traslapes reales aplicados. Usa esto en vez de calcular a mano. zintro_alum no tiene medidas ni precio confirmados en el catalogo: la tool regresa un aviso de 'sin datos', no un calculo inventado.",
+        "Calcula cuantas piezas de lamina/plastiteja se necesitan dando ancho a cubrir y largo de la pendiente del techo, ya con traslapes reales aplicados. Usa esto en vez de calcular a mano. galvateja y economica tienen precio por pieza pero su traslape para cubrir area todavia no esta confirmado: la tool regresa un aviso de 'sin datos', no un calculo inventado.",
       parameters: {
         type: "object",
         properties: {
-          producto: { type: "string", enum: ["galvanizada", "zintro_alum", "plastiteja"] },
+          producto: { type: "string", enum: ["galvanizada", "zintro_alum", "plastiteja", "galvateja", "economica"] },
           anchoCubrirM: { type: "number", description: "Ancho total a cubrir, en metros." },
           largoPendienteM: { type: "number", description: "Largo de la pendiente del techo (de canal a cumbrera), en metros." },
         },
@@ -90,7 +90,7 @@ const TOOL_DEFINITIONS = [
       parameters: {
         type: "object",
         properties: {
-          producto: { type: "string", enum: ["galvanizada", "zintro_alum", "plastiteja"] },
+          producto: { type: "string", enum: ["galvanizada", "zintro_alum", "plastiteja", "galvateja", "economica"] },
           areaM2: { type: "number", description: "Area total del techo en metros cuadrados." },
         },
         required: ["producto", "areaM2"],

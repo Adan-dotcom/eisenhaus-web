@@ -4,12 +4,10 @@
 // - Traslape de punta (unir dos piezas en el largo): normalmente NO aplica, el cliente
 //   elige el largo comercial que cubre su pendiente. En el caso raro que se necesite, 15cm.
 //
-// Solo se calculan piezas para productos con traslape/desperdicio confirmado
-// por el negocio. Zintro Alum ya tiene precio y medida real (2026-08-13,
-// proveedor Hermosillo) pero el traslape lateral para cubrir m2 no esta
-// confirmado todavia (es parecido a galvanizada pero no se asume igual sin
-// que el negocio lo diga) - por eso sigue sin calculo de piezas, aunque ya
-// se le puede dar precio por pieza normal.
+// Zintro Alum (2026-08-13): negocio confirmo que usa el mismo traslape lateral
+// que galvanizada (10cm) -> ancho util 0.73m. Galvateja y Economica todavia NO
+// tienen traslape confirmado (perfiles distintos, no se asume igual sin que el
+// negocio lo diga) - se quedan sin calculo de piezas, solo precio por pieza.
 const TRASLAPE_PUNTA_M = 0.15;
 const BARRA_ESTRUCTURAL_M = 6;
 
@@ -29,10 +27,17 @@ const LAMINA_SPECS = {
     anchoUtilM: 0.85,
     largosM: [7.15, 6.15, 5.00, 4.60, 4.00, 3.66, 3.05, 2.50, 1.50, 1.10],
   },
+  zintro_alum: {
+    label: "Zintro Alum",
+    anchoNominalM: 0.83,
+    anchoUtilM: 0.73,
+    largosM: [6.10, 4.88, 4.27, 3.66, 3.05],
+  },
 };
 
-// Reconocidos pero sin ficha de medidas/precio confirmada todavia.
-const SIN_DATOS_CONFIRMADOS = new Set(["zintro_alum"]);
+// Reconocidos pero sin ficha de traslape confirmada todavia (si tienen precio
+// por pieza, solo no se calculan piezas para cubrir un area).
+const SIN_DATOS_CONFIRMADOS = new Set(["galvateja", "economica"]);
 
 const PRODUCTO_ALIASES = {
   galvanizada: "galvanizada",
