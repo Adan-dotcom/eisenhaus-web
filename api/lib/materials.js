@@ -4,10 +4,12 @@
 // - Traslape de punta (unir dos piezas en el largo): normalmente NO aplica, el cliente
 //   elige el largo comercial que cubre su pendiente. En el caso raro que se necesite, 15cm.
 //
-// Solo se calculan piezas para productos que existen con precio confirmado en
-// guia_precios_productos.csv / el catalogo real del sitio. Zintro Alum NO esta
-// en esa lista (sigue "Cotizar", sin precio ni medidas confirmadas) asi que no
-// se calcula con datos inventados: se marca como sin datos y se manda al asesor.
+// Solo se calculan piezas para productos con traslape/desperdicio confirmado
+// por el negocio. Zintro Alum ya tiene precio y medida real (2026-08-13,
+// proveedor Hermosillo) pero el traslape lateral para cubrir m2 no esta
+// confirmado todavia (es parecido a galvanizada pero no se asume igual sin
+// que el negocio lo diga) - por eso sigue sin calculo de piezas, aunque ya
+// se le puede dar precio por pieza normal.
 const TRASLAPE_PUNTA_M = 0.15;
 const BARRA_ESTRUCTURAL_M = 6;
 
@@ -20,9 +22,12 @@ const LAMINA_SPECS = {
   },
   plastiteja: {
     label: "Plastiteja",
-    anchoNominalM: 1.05,
-    anchoUtilM: 0.90,
-    largosM: [6.0, 5.0, 4.0, 3.0, 2.0],
+    // Actualizado 2026-08-13: cambio de proveedor (Hermosillo), ancho nominal
+    // 1.00m (antes 1.05m). Se mantiene el traslape lateral de 15cm confirmado
+    // por el negocio para esta familia de producto -> util 0.85m.
+    anchoNominalM: 1.00,
+    anchoUtilM: 0.85,
+    largosM: [7.15, 6.15, 5.00, 4.60, 4.00, 3.66, 3.05, 2.50, 1.50, 1.10],
   },
 };
 
@@ -74,7 +79,7 @@ function calcLaminaPieces({ producto, anchoCubrirM, largoPendienteM }) {
     return {
       producto,
       sinDatosConfirmados: true,
-      nota: "Este producto no tiene precio ni medidas confirmadas en el catalogo todavia. No calcules piezas ni asumas que es igual a otro producto: dile al cliente que se cotiza directo con el asesor.",
+      nota: "Este producto tiene precio por pieza, pero el traslape para calcular cuantas piezas cubren un area todavia no esta confirmado. No calcules piezas ni asumas que es igual a otro producto: dile al cliente que la cantidad exacta se confirma con el asesor.",
     };
   }
   const { specKey, spec } = resolved;
@@ -126,7 +131,7 @@ function calcLaminaPiecesFromArea({ producto, areaM2 }) {
     return {
       producto,
       sinDatosConfirmados: true,
-      nota: "Este producto no tiene precio ni medidas confirmadas en el catalogo todavia. No calcules piezas ni asumas que es igual a otro producto: dile al cliente que se cotiza directo con el asesor.",
+      nota: "Este producto tiene precio por pieza, pero el traslape para calcular cuantas piezas cubren un area todavia no esta confirmado. No calcules piezas ni asumas que es igual a otro producto: dile al cliente que la cantidad exacta se confirma con el asesor.",
     };
   }
   const { spec } = resolved;

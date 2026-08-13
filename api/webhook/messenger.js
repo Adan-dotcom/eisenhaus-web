@@ -1,10 +1,12 @@
 const { TOOL_DEFINITIONS, runTool } = require("../lib/tools");
 
 const FICHA_TECNICA = `
-Lamina galvanizada (metalica, CON precio en catalogo): ideal para naves industriales, bodegas, techos de gran claro, cercos. Muy resistente a golpes/granizo, no se agrieta. Ligera, aislamiento termico/acustico bajo (se calienta mas, mas ruido con lluvia salvo que se agregue aislante). Generalmente mas economica por m2. Estetica industrial, no imita teja.
-Zintro Alum (metalica, zinc-aluminio, SIN precio ni medidas confirmadas en catalogo todavia): en teoria mejor que galvanizada estandar en ambientes costeros/alta humedad, pero como no hay ficha confirmada, siempre que salga dile al cliente que se cotiza directo con el asesor, no le des precio ni midas piezas para este producto.
-Plastiteja (PVC, CON precio en catalogo): ideal para techos residenciales visibles, cocheras, fachada con acabado tipo teja. No se oxida ni corroe, buena tolerancia a intemperie, menor resistencia a impacto fuerte que lamina metalica calibre grueso. Mejor aislamiento termico/acustico (mas silenciosa con lluvia). Vida util larga, el color puede decolorarse con años de sol intenso. Mantenimiento minimo. Generalmente mas cara por m2 que galvanizada estandar.
-Regla: bodega/nave/presupuesto ajustado/area no visible -> galvanizada. Casa/cochera/fachada visible/quiere aspecto teja -> plastiteja. Prioriza silencio bajo lluvia o aislamiento -> plastiteja. Ambiente costero/alta humedad -> menciona Zintro Alum como opcion pero aclara que se cotiza directo, sin precio en catalogo. Acompaña siempre aclarando en lenguaje simple que el asesor confirma el calibre exacto contigo antes de cerrar el pedido (sin decir "valida la estructura" ni tecnicismos parecidos).
+Lamina galvanizada (metalica, calibre 28, CON precio en catalogo): ideal para naves industriales, bodegas, techos de gran claro, cercos. Muy resistente a golpes/granizo, no se agrieta. Ligera, aislamiento termico/acustico bajo (se calienta mas, mas ruido con lluvia salvo que se agregue aislante). Estetica industrial, no imita teja. La opcion estandar de entrada.
+Lamina economica (metalica, calibre 30, mas delgada que la galvanizada estandar, CON precio en catalogo): opcion de menor costo para presupuesto muy ajustado. Menos resistente que la galvanizada calibre 28 por ser mas delgada - si el proyecto necesita aguantar granizo fuerte o mucho trafico/impacto, mejor recomienda la galvanizada estandar.
+Zintro Alum (metalica, aleacion zinc-silicio-aluminio, CON precio en catalogo desde 2026-08-13): mas resistente que la galvanizada estandar, mejor opcion en ambientes costeros o de alta humedad porque resiste mejor la corrosion. Es la opcion premium dentro de las laminas metalicas lisas.
+Plastiteja (PVC, CON precio en catalogo): ideal para techos residenciales visibles, cocheras, fachada con acabado tipo teja. No se oxida ni corroe, buena tolerancia a intemperie, menor resistencia a impacto fuerte que lamina metalica calibre grueso. Mejor aislamiento termico/acustico (mas silenciosa con lluvia). Vida util larga, el color puede decolorarse con años de sol intenso. Mantenimiento minimo.
+Galvateja (metalica, calibre 26, troquelada y pintada con acabado tipo teja, CON precio en catalogo): la alternativa metalica a la plastiteja para quien quiere el aspecto de teja pero prefiere la resistencia a impacto del acero sobre el PVC.
+Regla: bodega/nave/presupuesto ajustado/area no visible -> galvanizada o economica si el presupuesto es muy ajustado. Casa/cochera/fachada visible/quiere aspecto teja -> plastiteja (mas silenciosa, PVC) o Galvateja (metalica, mas resistente a impacto). Prioriza silencio bajo lluvia o aislamiento -> plastiteja. Ambiente costero/alta humedad -> Zintro Alum. Acompaña siempre aclarando en lenguaje simple que el asesor confirma el calibre exacto contigo antes de cerrar el pedido (sin decir "valida la estructura" ni tecnicismos parecidos).
 `.trim();
 
 const SYSTEM_PROMPT = `
@@ -32,13 +34,13 @@ ${FICHA_TECNICA}
 Cuando el cliente de medidas del techo (area total, o ancho a cubrir + largo de pendiente), usa las tools de calculo de piezas, no calcules tu a mano ni "a ojo".
 Si preguntan por diseno estructural (separacion de polines, claros, cargas), no lo definas tu: aclara que eso lo valida el asesor por seguridad, y solo ayuda a convertir metros lineales ya definidos a piezas.
 
-Espiritu de venta: en cuanto el cliente decida un producto principal, sugiere en la misma respuesta (breve, no insistente) el complemento logico que le falta - lamina o plastiteja -> pija punta de broca para fijarla; plastiteja -> caballete para la cumbrera si no lo ha pedido; techo sin mencionar estructura -> polin C o PTR. Ofrecelo una vez; si el cliente dice que no o lo ignora, no insistas de nuevo con lo mismo.
+Espiritu de venta: en cuanto el cliente decida un producto principal, sugiere en la misma respuesta (breve, no insistente) el complemento logico que le falta - cualquier lamina (galvanizada, economica, Zintro Alum, Galvateja) o plastiteja -> pija punta de broca para fijarla; plastiteja o Galvateja -> caballete o Campana para la cumbrera si no lo ha pedido; techo sin mencionar estructura -> polin C o perfil tubular rectangular. Ofrecelo una vez; si el cliente dice que no o lo ignora, no insistas de nuevo con lo mismo.
 
 Tienes la tool send_product_photo (manda una foto real del producto por Messenger): usala cuando el cliente no sepa que es un producto (ej. no conoce el caballete), este decidiendo entre opciones (galvanizada vs plastiteja), o pregunte especificamente por un producto sin que ya le hayas mandado foto de ese producto en esta conversacion. La foto se manda aparte automaticamente en cuanto llamas la tool: no describas la imagen ni pongas un link en tu texto.
 
 Solo llama build_whatsapp_handoff cuando se cumplan las 4 cosas: (1) el cliente confirmo explicitamente que quiere comprar o proceder (un "si" a una pregunta de cierre cuenta, no lo vuelvas a preguntar si ya lo dijo), (2) te dio su direccion de entrega exacta (calle, colonia o una referencia clara - la ciudad sola no basta, la direccion es lo que confirma si de verdad se puede entregar ahi), (3) esa ciudad ya tiene cobertura confirmada con check_delivery_coverage, y (4) ya guardaste nombre y contacto con save_lead. El envio siempre es gratis (costo $0), nunca lo menciones como algo a cobrar aparte. Incluye la direccion exacta en el resumen que le pasas a la tool. build_whatsapp_handoff es la UNICA entrega a un humano en todo el proceso: nunca le digas al cliente que despues lo van a pasar con otro asesor de envios, logistica o cualquier otro paso - es un solo asesor, el mismo, el que se encarga de todo desde ese momento.
 Cobertura actual: solo zona sur-centro de Sonora (Hermosillo, Navojoa y alrededores), nacional aun no disponible.
-Productos principales: lamina galvanizada, Zintro Alum, plastiteja roja, polin C, PTR R300/R200, perfiles rectangulares y pija punta de broca.
+Productos principales: lamina galvanizada, lamina economica, Zintro Alum, plastiteja roja, Galvateja (lamina con acabado tipo teja), Campana (remate decorativo), polin C, perfil tubular rectangular, perfiles rectangulares y pija punta de broca.
 `.trim();
 
 // Snapshot del catalogo de index.html - mismos precios que el sitio (zona Navojoa).
@@ -51,24 +53,43 @@ const CATALOG_CONTEXT = [
   { id: "galvanizada-366", name: "Lamina galvanizada 3.66 x 0.82 m", category: "Lamina", price: 510, unit: "pieza" },
   { id: "galvanizada-305", name: "Lamina galvanizada 3.05 x 0.82 m", category: "Lamina", price: 425, unit: "pieza" },
   { id: "galvanizada-244", name: "Lamina galvanizada 2.44 x 0.82 m", category: "Lamina", price: 360, unit: "pieza" },
-  { id: "zintro-alum", name: "Zintro Alum", category: "Lamina", availability: "Cotizar" },
-  { id: "plastiteja-600", name: "Plastiteja roja 6.0 x 1.05 m", category: "Teja", price: 1430, unit: "pieza" },
-  { id: "plastiteja-500", name: "Plastiteja roja 5.0 x 1.05 m", category: "Teja", price: 1200, unit: "pieza" },
-  { id: "plastiteja-400", name: "Plastiteja roja 4.0 x 1.05 m", category: "Teja", price: 970, unit: "pieza" },
-  { id: "plastiteja-300", name: "Plastiteja roja 3.0 x 1.05 m", category: "Teja", price: 740, unit: "pieza" },
-  { id: "plastiteja-200", name: "Plastiteja roja 2.0 x 1.05 m", category: "Teja", price: 510, unit: "pieza" },
-  { id: "caballete-plastiteja", name: "Caballete de plastiteja", category: "Teja", price: 600, unit: "pieza" },
-  { id: "polin-c-3", name: "Polin C tipo 3", category: "Perfil", price: 620, unit: "pieza" },
-  { id: "polin-c-4", name: "Polin C tipo 4", category: "Perfil", price: 720, unit: "pieza" },
-  { id: "ptr-ternium-3x1.5", name: "PTR Ternium 3 x 1.5 pulgadas", category: "Perfil", price: 500, unit: "pieza" },
+  { id: "zintro-alum-610", name: "Zintro Alum 6.10 x 0.83 m", category: "Lamina", price: 735, unit: "pieza" },
+  { id: "zintro-alum-488", name: "Zintro Alum 4.88 x 0.83 m", category: "Lamina", price: 600, unit: "pieza" },
+  { id: "zintro-alum-427", name: "Zintro Alum 4.27 x 0.83 m", category: "Lamina", price: 530, unit: "pieza" },
+  { id: "zintro-alum-366", name: "Zintro Alum 3.66 x 0.83 m", category: "Lamina", price: 460, unit: "pieza" },
+  { id: "zintro-alum-305", name: "Zintro Alum 3.05 x 0.83 m", category: "Lamina", price: 395, unit: "pieza" },
+  { id: "economica-300", name: "Lamina economica 3.00 x 0.75 m", category: "Lamina", price: 290, unit: "pieza" },
+  { id: "plastiteja-715", name: "Plastiteja roja 7.15 x 1.00 m", category: "Teja", price: 1570, unit: "pieza" },
+  { id: "plastiteja-615", name: "Plastiteja roja 6.15 x 1.00 m", category: "Teja", price: 1360, unit: "pieza" },
+  { id: "plastiteja-500", name: "Plastiteja roja 5.00 x 1.00 m", category: "Teja", price: 1120, unit: "pieza" },
+  { id: "plastiteja-460", name: "Plastiteja roja 4.60 x 1.00 m", category: "Teja", price: 1030, unit: "pieza" },
+  { id: "plastiteja-400", name: "Plastiteja roja 4.00 x 1.00 m", category: "Teja", price: 950, unit: "pieza" },
+  { id: "plastiteja-366", name: "Plastiteja roja 3.66 x 1.00 m", category: "Teja", price: 830, unit: "pieza" },
+  { id: "plastiteja-305", name: "Plastiteja roja 3.05 x 1.00 m", category: "Teja", price: 700, unit: "pieza" },
+  { id: "plastiteja-250", name: "Plastiteja roja 2.50 x 1.00 m", category: "Teja", price: 585, unit: "pieza" },
+  { id: "plastiteja-150", name: "Plastiteja roja 1.50 x 1.00 m", category: "Teja", price: 375, unit: "pieza" },
+  { id: "plastiteja-110", name: "Plastiteja roja 1.10 x 1.00 m", category: "Teja", price: 290, unit: "pieza" },
+  { id: "caballete-plastiteja-305", name: "Caballete de plastiteja 3.05 m", category: "Teja", price: 860, unit: "pieza" },
+  { id: "caballete-plastiteja-177", name: "Caballete de plastiteja 1.77 m", category: "Teja", price: 470, unit: "pieza" },
+  { id: "galvateja-610", name: "Galvateja 6.10 x 1.13 m", category: "Teja", price: 1525, unit: "pieza" },
+  { id: "galvateja-488", name: "Galvateja 4.88 x 1.13 m", category: "Teja", price: 1235, unit: "pieza" },
+  { id: "galvateja-427", name: "Galvateja 4.27 x 1.13 m", category: "Teja", price: 1080, unit: "pieza" },
+  { id: "galvateja-366", name: "Galvateja 3.66 x 1.13 m", category: "Teja", price: 940, unit: "pieza" },
+  { id: "galvateja-305", name: "Galvateja 3.05 x 1.13 m", category: "Teja", price: 790, unit: "pieza" },
+  { id: "campana-305", name: "Campana 3.05 m", category: "Teja", price: 410, unit: "pieza" },
+  { id: "polin-c-3", name: "Polin C 3 pulgadas", category: "Perfil", price: 510, unit: "pieza" },
+  { id: "polin-c-4", name: "Polin C 4 pulgadas", category: "Perfil", price: 610, unit: "pieza" },
+  { id: "perfil-3x1.5", name: "Perfil tubular rectangular 3 x 1.5 pulgadas", category: "Perfil", price: 460, unit: "pieza" },
   { id: "perfiles-rectangulares", name: "Perfiles rectangulares", category: "Perfil", availability: "Cotizar" },
   { id: "pija-punta-broca", name: "Pija punta de broca", category: "Ferreteria", price: 180, unit: "ciento" },
 ];
 
-// Sin foto confirmada todavia para zintro-alum ni perfiles-rectangulares.
+// Sin foto confirmada todavia para zintro-alum, galvateja ni perfiles-rectangulares.
 const PRODUCT_PHOTOS = {
   galvanizada: "https://www.eisenhaus.lat/assets/productos/galvanizada.jpeg",
+  economica: "https://www.eisenhaus.lat/assets/productos/economica.jpeg",
   plastiteja: "https://www.eisenhaus.lat/assets/productos/plastiteja.jpeg",
+  campana: "https://www.eisenhaus.lat/assets/productos/campana.jpeg",
   "polin-c": "https://www.eisenhaus.lat/assets/productos/polin-c.jpeg",
   ptr: "https://www.eisenhaus.lat/assets/productos/ptr.jpeg",
   pija: "https://www.eisenhaus.lat/assets/productos/pija.jpeg",
