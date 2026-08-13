@@ -2,7 +2,7 @@ const { checkCoverage } = require("./delivery");
 const { calcLaminaPieces, calcLaminaPiecesFromArea, calcBarrasEstructurales } = require("./materials");
 
 // Debe coincidir con WHATSAPP en index.html.
-const WHATSAPP_NUMBER = "525657016506";
+const WHATSAPP_NUMBER = "5215657016506";
 
 const isProduction = process.env.VERCEL_ENV === "production";
 function devLog(label, value) {

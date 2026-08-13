@@ -53,6 +53,28 @@ function envValue(name, fallback = "") {
   return String(raw).trim().replace(/^["']|["']$/g, "");
 }
 
+// Avisa por Messenger al dueño del negocio cuando un lead queda confirmado
+// desde el chat web (mismo mecanismo que usa el bot de Messenger).
+async function notifyOwner(text) {
+  const ownerPsid = envValue("OWNER_PSID");
+  const pageToken = envValue("META_PAGE_ACCESS_TOKEN");
+  if (!ownerPsid || !pageToken) return;
+  try {
+    const url = `https://graph.facebook.com/v19.0/me/messages?access_token=${encodeURIComponent(pageToken)}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ recipient: { id: ownerPsid }, message: { text } }),
+    });
+    if (!response.ok) {
+      const errorBody = await response.text();
+      devLog("notify_owner_error", { status: response.status, errorBody });
+    }
+  } catch (error) {
+    devLog("notify_owner_exception", error?.message || error);
+  }
+}
+
 // El modelo a veces repite el link de wa.me en el texto aunque ya se manda
 // aparte como `action` (boton real en el frontend). Se limpia aqui para no
 // depender de que el prompt se obedezca al 100%.
@@ -174,6 +196,7 @@ module.exports = async function handler(req, res) {
 
           if (call.function?.name === "build_whatsapp_handoff" && result?.url) {
             action = { type: "whatsapp", url: result.url, label: result.label || "Enviar por WhatsApp" };
+            await notifyOwner(`🔥 LEAD CONFIRMADO (chat web):\n${args.resumen || "(sin resumen)"}`);
           }
 
           messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(result) });

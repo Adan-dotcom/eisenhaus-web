@@ -243,6 +243,9 @@ async function getAiReply(psid, userText) {
           }
         } else {
           result = await runTool(call.function?.name, args);
+          if (call.function?.name === "build_whatsapp_handoff" && result?.url) {
+            await notifyOwner(`🔥 LEAD CONFIRMADO (Messenger):\n${args.resumen || "(sin resumen)"}`);
+          }
         }
         messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(result) });
       }
@@ -268,6 +271,16 @@ async function sendMessengerReply(psid, text) {
   if (!response.ok) {
     const errorBody = await response.text();
     console.error("[messenger:send_api_error]", response.status, errorBody);
+  }
+}
+
+async function notifyOwner(text) {
+  const ownerPsid = envValue("OWNER_PSID");
+  if (!ownerPsid) return;
+  try {
+    await sendMessengerReply(ownerPsid, text);
+  } catch (error) {
+    console.error("[messenger:notify_owner_error]", error?.message || error);
   }
 }
 
