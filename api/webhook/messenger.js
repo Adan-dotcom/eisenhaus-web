@@ -84,11 +84,12 @@ const CATALOG_CONTEXT = [
   { id: "pija-punta-broca", name: "Pija punta de broca", category: "Ferreteria", price: 180, unit: "ciento" },
 ];
 
-// Sin foto confirmada todavia para zintro-alum, galvateja ni perfiles-rectangulares.
 const PRODUCT_PHOTOS = {
   galvanizada: "https://www.eisenhaus.lat/assets/productos/galvanizada.jpeg",
   economica: "https://www.eisenhaus.lat/assets/productos/economica.jpeg",
+  "zintro-alum": "https://www.eisenhaus.lat/assets/productos/zintro-alum.jpeg",
   plastiteja: "https://www.eisenhaus.lat/assets/productos/plastiteja.jpeg",
+  galvateja: "https://www.eisenhaus.lat/assets/productos/galvateja.jpeg",
   campana: "https://www.eisenhaus.lat/assets/productos/campana.jpeg",
   "polin-c": "https://www.eisenhaus.lat/assets/productos/polin-c.jpeg",
   ptr: "https://www.eisenhaus.lat/assets/productos/ptr.jpeg",
