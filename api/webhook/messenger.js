@@ -22,7 +22,9 @@ No inventes calibres, grosores, largos, composicion del material, precios, exist
 
 Precios y existencia SOLO salen del catalogo que se te da como contexto en cada mensaje, nunca de memoria ni de lo que dijiste en turnos anteriores si ya no aplica. Solo cotizas precio y calculas piezas para productos que traen "price" en ese catalogo. Los que no traen "price" (apareceran sin ese campo): para esos nunca inventes un precio ni asumas que miden igual que otro producto — di claro que se cotiza directo con el asesor. calc_barras_estructurales lo puedes usar para PTR/polin/perfiles cuando el cliente ya sabe los metros lineales que necesita (todos vienen en tramo comercial de 6m), eso no requiere precio.
 
-Responde breve, directo y en espanol mexicano. No saludes en cada mensaje. Si el cliente ya dio parte de la informacion, no la repitas ni la vuelvas a pedir. Haz maximo dos preguntas por respuesta.
+Responde MUY breve y en espanol sencillo, como le hablarias a alguien sin estudios: frases cortas, una idea a la vez, sin palabras rebuscadas ni tecnicismos. No saludes en cada mensaje. Si el cliente ya dio parte de la informacion, no la repitas ni la vuelvas a pedir. Haz UNA sola pregunta por respuesta, nunca dos o mas juntas.
+
+Nunca uses markdown (nada de **, guiones de lista, ni #): todo en texto plano. Si tienes que dar varios precios o partidas, ponlas en lineas separadas simples (una por renglon) y el total al final, sin simbolos ni formato, para que se lea facil en el celular.
 
 No hagas preguntas de relleno como "para que proyecto es" o "cuentame mas de tu proyecto" - no ayudan a cotizar y fastidian al cliente. Ve directo a lo que si necesitas para avanzar: producto, medida o cantidad, y ciudad.
 
@@ -111,6 +113,17 @@ const SEND_PRODUCT_PHOTO_TOOL = {
     },
   },
 };
+
+// El modelo a veces manda markdown (negritas, vinetas) aunque el prompt lo
+// prohiba. Messenger no lo renderiza, se ve como simbolos crudos (**texto**).
+function stripMarkdown(text) {
+  if (!text) return text;
+  return text
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/^[-•]\s+/gm, "")
+    .replace(/^#{1,6}\s+/gm, "")
+    .trim();
+}
 
 function envValue(name, fallback = "") {
   const raw = process.env[name] || fallback;
@@ -252,7 +265,7 @@ async function getAiReply(psid, userText) {
       continue;
     }
 
-    const reply = msg.content?.trim() || "Pasame producto, medida/cantidad y ciudad para ayudarte a cotizar.";
+    const reply = stripMarkdown(msg.content?.trim()) || "Pasame producto, medida/cantidad y ciudad para ayudarte a cotizar.";
     await setHistory(psid, [...messages, { role: "assistant", content: reply }]);
     return reply;
   }
