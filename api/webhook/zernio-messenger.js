@@ -275,7 +275,7 @@ async function sendZernioText(conversationId, text) {
   const response = await fetch(url, {
     method: "POST",
     headers: zernioHeaders(),
-    body: JSON.stringify({ message: text }),
+    body: JSON.stringify({ accountId: FACEBOOK_ACCOUNT_ID, message: text }),
   });
   if (!response.ok) {
     const errorBody = await response.text();
@@ -288,7 +288,7 @@ async function sendZernioImage(conversationId, imageUrl) {
   const response = await fetch(url, {
     method: "POST",
     headers: zernioHeaders(),
-    body: JSON.stringify({ attachments: [{ type: "image", url: imageUrl }] }),
+    body: JSON.stringify({ accountId: FACEBOOK_ACCOUNT_ID, attachments: [{ type: "image", url: imageUrl }] }),
   });
   if (!response.ok) {
     const errorBody = await response.text();
