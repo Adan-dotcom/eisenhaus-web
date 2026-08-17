@@ -308,6 +308,100 @@ async function notifyOwner(text) {
   }
 }
 
+// Respuesta a comentarios publicos: no es el mismo flujo de venta completo
+// (nombre/contacto/direccion no tienen sentido en un comentario publico),
+// es una respuesta corta con precio real si preguntan por producto, mas
+// invitacion a seguir por Messenger para lo demas.
+const COMMENT_SYSTEM_PROMPT = `
+Te llamas Valentina, asesora de EISENHAUS (lamina y perfil estructural, Hermosillo/Navojoa/Cajeme/Etchojoa/Huatabampo/Alamos y alrededores). Estas contestando un COMENTARIO PUBLICO de Facebook, no un mensaje privado.
+Si preguntan por precio de un producto, dalo directo usando SOLO el catalogo que se te da (nunca inventes numeros). Si preguntan por varios productos a la vez, da los precios de entrada ("desde $X") de cada uno.
+Maximo 2-3 lineas, tono directo y amigable, espanol mexicano. Sin preguntas de relleno.
+Termina siempre invitando a escribir por Messenger para cotizacion exacta (piezas, entrega a su ciudad, etc) - no describas el proceso completo aqui, solo invita.
+No pidas nombre, telefono ni direccion aqui, eso es para la conversacion privada.
+`.trim();
+
+async function getCommentReply(commentText) {
+  const apiKey = envValue("AI_API_KEY");
+  const baseUrl = envValue("AI_BASE_URL", "https://api.openai.com/v1");
+  const model = envValue("AI_MODEL", "gpt-4o-mini");
+  const chatUrl = baseUrl.replace(/\/$/, "").endsWith("/chat/completions")
+    ? baseUrl.replace(/\/$/, "")
+    : `${baseUrl.replace(/\/$/, "")}/chat/completions`;
+
+  const upstream = await fetch(chatUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model,
+      thinking: { type: "disabled" },
+      temperature: 0.3,
+      max_tokens: 300,
+      messages: [
+        { role: "system", content: COMMENT_SYSTEM_PROMPT },
+        { role: "system", content: `Catalogo actual, unica fuente de verdad: ${JSON.stringify(CATALOG_CONTEXT)}` },
+        { role: "user", content: commentText },
+      ],
+    }),
+  });
+
+  const data = await upstream.json();
+  if (!upstream.ok) {
+    throw new Error(data?.error?.message || "AI provider error");
+  }
+  return data?.choices?.[0]?.message?.content?.trim() || "Gracias por tu interes. Escribenos por Messenger para cotizar al instante.";
+}
+
+async function replyToComment(platformPostId, commentId, message) {
+  const url = `${ZERNIO_API_BASE}/inbox/comments/${encodeURIComponent(platformPostId)}`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: zernioHeaders(),
+    body: JSON.stringify({ accountId: FACEBOOK_ACCOUNT_ID, commentId, message }),
+  });
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error("[zernio-messenger:comment_reply_error]", response.status, errorBody);
+  }
+}
+
+async function sendPrivateReplyToComment(platformPostId, commentId, message) {
+  const url = `${ZERNIO_API_BASE}/inbox/comments/${encodeURIComponent(platformPostId)}/${encodeURIComponent(commentId)}/private-reply`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: zernioHeaders(),
+    body: JSON.stringify({ accountId: FACEBOOK_ACCOUNT_ID, message }),
+  });
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error("[zernio-messenger:private_reply_error]", response.status, errorBody);
+  }
+}
+
+async function handleCommentReceived(body) {
+  const comment = body.comment || {};
+  const text = comment.message || comment.text;
+  const commentId = comment.id || comment.commentId;
+  const postId = comment.postId || comment.platformPostId || comment.post?.id;
+  const platform = comment.platform;
+  const authorId = comment.author?.id || comment.from?.id;
+
+  if (!text || !commentId || !postId || platform !== "facebook") return;
+  // No contestarnos a nosotros mismos (comentarios propios de la pagina, ej. esta misma respuesta).
+  if (authorId === FACEBOOK_ACCOUNT_ID || authorId === "1170314942841975") return;
+
+  try {
+    const reply = await getCommentReply(text);
+    await replyToComment(postId, commentId, reply);
+    await sendPrivateReplyToComment(
+      postId,
+      commentId,
+      "Te contesté aquí abajo 👇 Si quieres que te ayude a calcular piezas o confirmar entrega a tu ciudad, escríbeme por aquí."
+    );
+  } catch (error) {
+    console.error("[zernio-messenger:comment_webhook]", error?.message || error);
+  }
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -324,25 +418,27 @@ module.exports = async function handler(req, res) {
 
   const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
 
-  if (body.event !== "message.received") {
-    return res.status(200).json({ ok: true, skipped: "not message.received" });
-  }
-
-  const message = body.message || {};
-  const conversationId = message.conversationId;
-  const text = message.text;
-  const platform = message.platform;
-  const direction = message.direction;
-
   // Process fully before responding: Vercel can freeze the function right
   // after the response is sent, killing any work still in flight.
-  if (conversationId && text && platform === "facebook" && direction === "incoming") {
-    try {
-      const reply = await getAiReply(conversationId, text);
-      await sendZernioText(conversationId, reply);
-    } catch (error) {
-      console.error("[zernio-messenger:webhook]", error?.message || error);
+  if (body.event === "message.received") {
+    const message = body.message || {};
+    const conversationId = message.conversationId;
+    const text = message.text;
+    const platform = message.platform;
+    const direction = message.direction;
+
+    if (conversationId && text && platform === "facebook" && direction === "incoming") {
+      try {
+        const reply = await getAiReply(conversationId, text);
+        await sendZernioText(conversationId, reply);
+      } catch (error) {
+        console.error("[zernio-messenger:webhook]", error?.message || error);
+      }
     }
+  } else if (body.event === "comment.received") {
+    await handleCommentReceived(body);
+  } else {
+    return res.status(200).json({ ok: true, skipped: `unhandled event: ${body.event}` });
   }
 
   return res.status(200).json({ ok: true });
