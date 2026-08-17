@@ -1,4 +1,5 @@
 const { TOOL_DEFINITIONS, runTool } = require("../lib/tools");
+const { waitUntil } = require("@vercel/functions");
 
 const FICHA_TECNICA = `
 Lamina galvanizada (metalica, calibre 28, CON precio en catalogo): ideal para naves industriales, bodegas, techos de gran claro, cercos. Muy resistente a golpes/granizo, no se agrieta. Ligera, aislamiento termico/acustico bajo (se calienta mas, mas ruido con lluvia salvo que se agregue aislante). Estetica industrial, no imita teja. La opcion estandar de entrada.
@@ -336,20 +337,21 @@ module.exports = async function handler(req, res) {
     return res.status(404).json({ error: "Not a page event" });
   }
 
-  // Process fully before responding: Vercel can freeze the function right
-  // after the response is sent, killing any work still in flight.
+  // Meta reintenta si no respondemos rapido, y getAiReply puede tardar varios
+  // segundos (varias vueltas de tool-calling). Respondemos de inmediato y
+  // procesamos en background con waitUntil para no disparar reintentos que
+  // generen respuestas duplicadas (mismo bug encontrado en zernio-messenger.js).
   for (const entry of body.entry || []) {
     for (const event of entry.messaging || []) {
       const psid = event.sender?.id;
       const text = event.message?.text;
       if (!psid || !text || event.message?.is_echo) continue;
 
-      try {
-        const reply = await getAiReply(psid, text);
-        await sendMessengerReply(psid, reply);
-      } catch (error) {
-        console.error("[messenger:webhook]", error?.message || error);
-      }
+      waitUntil(
+        getAiReply(psid, text)
+          .then((reply) => sendMessengerReply(psid, reply))
+          .catch((error) => console.error("[messenger:webhook]", error?.message || error))
+      );
     }
   }
 

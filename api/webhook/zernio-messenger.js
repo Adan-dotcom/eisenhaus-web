@@ -1,4 +1,5 @@
 const { TOOL_DEFINITIONS, runTool } = require("../lib/tools");
+const { waitUntil } = require("@vercel/functions");
 
 // Reemplaza el webhook directo de Meta: ese solo recibe eventos de gente que
 // es admin/tester de la app (sin App Review avanzado para pages_messaging,
@@ -151,6 +152,24 @@ function zernioHeaders() {
 // Fallback en memoria: solo sobrevive mientras la instancia de Vercel siga
 // caliente. Supabase (abajo) es la fuente real cuando esta configurado.
 const conversations = new Map();
+
+// Zernio reintenta un evento (hasta 7 veces, backoff hasta 24h) si no
+// respondemos 2xx en 5s, y advierte que la entrega es "at-least-once":
+// dedupe por event id. Esto es una red de seguridad best-effort (solo dura
+// mientras la instancia siga caliente) - la defensa real es responder rapido,
+// ver mas abajo el uso de waitUntil.
+const processedEventIds = new Set();
+const MAX_TRACKED_EVENTS = 500;
+
+function alreadyProcessed(eventId) {
+  if (!eventId) return false;
+  if (processedEventIds.has(eventId)) return true;
+  processedEventIds.add(eventId);
+  if (processedEventIds.size > MAX_TRACKED_EVENTS) {
+    processedEventIds.delete(processedEventIds.values().next().value);
+  }
+  return false;
+}
 
 function supabaseConfig() {
   const url = envValue("SUPABASE_URL");
@@ -434,8 +453,27 @@ module.exports = async function handler(req, res) {
 
   const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
 
-  // Process fully before responding: Vercel can freeze the function right
-  // after the response is sent, killing any work still in flight.
+  // Zernio da 5s para responder 2xx o reintenta el evento completo (hasta 7
+  // veces). getAiReply hace varias vueltas de tool-calling contra la IA, asi
+  // que en cold start facil se pasa de 5s - eso fue justo lo que provoco un
+  // cliente real (Cruz Urzua) recibiendo la misma lista de precios 10 veces:
+  // cada reintento de Zernio disparaba un procesamiento nuevo desde cero.
+  // Ahora respondemos de inmediato y seguimos procesando en background con
+  // waitUntil, tal como lo recomienda la documentacion de Zernio.
+  const eventId = req.headers["x-zernio-event-id"] || body.id;
+  if (alreadyProcessed(eventId)) {
+    return res.status(200).json({ ok: true, deduped: true });
+  }
+
+  // Ademas del reintento por timeout, se vio el mismo mensaje del cliente
+  // (mismo texto, mismo remitente) llegar 3 veces en 40ms - entrega
+  // duplicada desde el origen, no un reintento nuestro. Dedupe tambien por
+  // el id del mensaje en si, no solo del evento del webhook.
+  const incomingMessageId = body.message?.id;
+  if (alreadyProcessed(incomingMessageId ? `msg:${incomingMessageId}` : null)) {
+    return res.status(200).json({ ok: true, deduped: true });
+  }
+
   if (body.event === "message.received") {
     const message = body.message || {};
     const conversationId = message.conversationId;
@@ -444,15 +482,14 @@ module.exports = async function handler(req, res) {
     const direction = message.direction;
 
     if (conversationId && text && platform === "facebook" && direction === "incoming") {
-      try {
-        const reply = await getAiReply(conversationId, text);
-        await sendZernioText(conversationId, reply);
-      } catch (error) {
-        console.error("[zernio-messenger:webhook]", error?.message || error);
-      }
+      waitUntil(
+        getAiReply(conversationId, text)
+          .then((reply) => sendZernioText(conversationId, reply))
+          .catch((error) => console.error("[zernio-messenger:webhook]", error?.message || error))
+      );
     }
   } else if (body.event === "comment.received") {
-    await handleCommentReceived(body);
+    waitUntil(handleCommentReceived(body));
   } else {
     return res.status(200).json({ ok: true, skipped: `unhandled event: ${body.event}` });
   }
