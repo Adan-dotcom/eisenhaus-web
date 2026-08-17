@@ -381,7 +381,9 @@ async function handleCommentReceived(body) {
   const comment = body.comment || {};
   const text = comment.message || comment.text;
   const commentId = comment.id || comment.commentId;
-  const postId = comment.postId || comment.platformPostId || comment.post?.id;
+  // OJO: comment.postId es el ID interno de Zernio, no sirve para las llamadas
+  // REST de comentarios - esas necesitan el platformPostId (formato pageId_postId).
+  const postId = comment.platformPostId || body.post?.platformPostId;
   const platform = comment.platform;
   const authorId = comment.author?.id || comment.from?.id;
 
