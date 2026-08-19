@@ -117,7 +117,7 @@ const TOOL_DEFINITIONS = [
     function: {
       name: "save_lead",
       description:
-        "Guarda el nombre y contacto del cliente. Debes llamar esta tool en cuanto el cliente te de su nombre y un contacto (telefono o correo), ANTES de seguir cotizando o calculando cualquier otra cosa. Puedes volver a llamarla despues con ciudad/necesidad si ya se conocen para actualizar el lead.",
+        "Guarda el nombre y contacto del cliente. Llama esta tool en cuanto el cliente te de su nombre y un contacto (telefono o correo) - no hace falta esperar a nada mas, y no bloquea seguir cotizando o calculando en la misma respuesta o las siguientes. Puedes volver a llamarla despues con ciudad/necesidad si ya se conocen para actualizar el lead.",
       parameters: {
         type: "object",
         properties: {
