@@ -12,8 +12,9 @@ const FICHA_TECNICA = `
 Lamina galvanizada (metalica, calibre 28, CON precio en catalogo): ideal para naves industriales, bodegas, techos de gran claro, cercos. Muy resistente a golpes/granizo, no se agrieta. Ligera, aislamiento termico/acustico bajo (se calienta mas, mas ruido con lluvia salvo que se agregue aislante). Estetica industrial, no imita teja. La opcion estandar de entrada.
 Lamina economica (metalica, calibre 30, mas delgada que la galvanizada estandar, CON precio en catalogo): opcion de menor costo para presupuesto muy ajustado. Menos resistente que la galvanizada calibre 28 por ser mas delgada - si el proyecto necesita aguantar granizo fuerte o mucho trafico/impacto, mejor recomienda la galvanizada estandar.
 Zintro Alum (metalica, aleacion zinc-silicio-aluminio, CON precio en catalogo desde 2026-08-13): mas resistente que la galvanizada estandar, mejor opcion en ambientes costeros o de alta humedad porque resiste mejor la corrosion. Es la opcion premium dentro de las laminas metalicas lisas.
-Plastiteja (PVC, CON precio en catalogo): ideal para techos residenciales visibles, cocheras, fachada con acabado tipo teja. No se oxida ni corroe, buena tolerancia a intemperie, menor resistencia a impacto fuerte que lamina metalica calibre grueso. Mejor aislamiento termico/acustico (mas silenciosa con lluvia). Vida util larga, el color puede decolorarse con años de sol intenso. Mantenimiento minimo.
-Galvateja (metalica, calibre 26, troquelada y pintada con acabado tipo teja, CON precio en catalogo): la alternativa metalica a la plastiteja para quien quiere el aspecto de teja pero prefiere la resistencia a impacto del acero sobre el PVC.
+Plastiteja (PVC, color ROJO, CON precio en catalogo): ideal para techos residenciales visibles, cocheras, fachada con acabado tipo teja. No se oxida ni corroe, buena tolerancia a intemperie, menor resistencia a impacto fuerte que lamina metalica calibre grueso. Mejor aislamiento termico/acustico (mas silenciosa con lluvia). Vida util larga, el color puede decolorarse con años de sol intenso. Mantenimiento minimo.
+Galvateja (metalica, calibre 26, color ROJO tambien (troquelada y pintada con acabado tipo teja), CON precio en catalogo): la alternativa metalica a la plastiteja para quien quiere el aspecto de teja pero prefiere la resistencia a impacto del acero sobre el PVC.
+IMPORTANTE sobre color: tanto Plastiteja como Galvateja son rojas. Si preguntan por "lamina roja" o "algo rojo" sin especificar cual, menciona AMBAS opciones (plastiteja PVC y Galvateja metalica) y deja que el cliente elija segun PVC vs metal.
 Regla: bodega/nave/presupuesto ajustado/area no visible -> galvanizada o economica si el presupuesto es muy ajustado. Casa/cochera/fachada visible/quiere aspecto teja -> plastiteja (mas silenciosa, PVC) o Galvateja (metalica, mas resistente a impacto). Prioriza silencio bajo lluvia o aislamiento -> plastiteja. Ambiente costero/alta humedad -> Zintro Alum. Acompaña siempre aclarando en lenguaje simple que el asesor confirma el calibre exacto contigo antes de cerrar el pedido (sin decir "valida la estructura" ni tecnicismos parecidos).
 `.trim();
 
@@ -105,6 +106,27 @@ const PRODUCT_PHOTOS = {
   ptr: "https://www.eisenhaus.lat/assets/productos/ptr.jpeg",
   pija: "https://www.eisenhaus.lat/assets/productos/pija.jpeg",
 };
+
+// El modelo tiene la tool send_product_photo pero en la practica casi nunca
+// la llama (revisado en conversaciones reales). Como red de seguridad,
+// detectamos por texto que producto se menciono en la respuesta y mandamos
+// la foto por codigo, sin depender de que el modelo se acuerde.
+const PRODUCT_KEYWORD_PATTERNS = {
+  galvanizada: /galvanizad/i,
+  economica: /econ[oó]mic/i,
+  "zintro-alum": /zintro/i,
+  plastiteja: /plastiteja/i,
+  galvateja: /galvateja/i,
+  campana: /campana/i,
+  "polin-c": /pol[ií]n/i,
+  ptr: /\bptr\b|perfil tubular/i,
+  pija: /\bpija/i,
+};
+
+function detectProducts(text) {
+  if (!text) return [];
+  return Object.keys(PRODUCT_KEYWORD_PATTERNS).filter((key) => PRODUCT_KEYWORD_PATTERNS[key].test(text));
+}
 
 const SEND_PRODUCT_PHOTO_TOOL = {
   type: "function",
@@ -240,6 +262,7 @@ async function getAiReply(conversationId, userText) {
   ];
 
   const MAX_ROUNDS = 4;
+  const photosSentThisTurn = new Set();
 
   for (let round = 0; round < MAX_ROUNDS; round++) {
     const upstream = await fetch(chatUrl, {
@@ -280,6 +303,7 @@ async function getAiReply(conversationId, userText) {
           const photoUrl = PRODUCT_PHOTOS[args.producto];
           if (photoUrl) {
             await sendZernioImage(conversationId, photoUrl);
+            photosSentThisTurn.add(args.producto);
             result = { sent: true };
           } else {
             result = { sent: false, reason: "Sin foto disponible para ese producto todavia." };
@@ -296,6 +320,27 @@ async function getAiReply(conversationId, userText) {
     }
 
     const reply = stripMarkdown(msg.content?.trim()) || "Pasame producto, medida/cantidad y ciudad para ayudarte a cotizar.";
+
+    // Fallback: si la respuesta menciona 1-2 productos puntuales (no un dump
+    // completo del catalogo) y todavia no se mando foto de esos, mandarla
+    // por codigo. No confiar en que el modelo llame send_product_photo.
+    const mentionedNow = detectProducts(reply);
+    if (mentionedNow.length > 0 && mentionedNow.length <= 2) {
+      const priorAssistantText = messages
+        .filter((m) => m.role === "assistant" && typeof m.content === "string")
+        .map((m) => m.content)
+        .join("\n");
+      const alreadyMentioned = new Set(detectProducts(priorAssistantText));
+      for (const key of mentionedNow) {
+        if (alreadyMentioned.has(key) || photosSentThisTurn.has(key)) continue;
+        const photoUrl = PRODUCT_PHOTOS[key];
+        if (photoUrl) {
+          await sendZernioImage(conversationId, photoUrl);
+          photosSentThisTurn.add(key);
+        }
+      }
+    }
+
     await setHistory(conversationId, [...messages, { role: "assistant", content: reply }]);
     return reply;
   }
